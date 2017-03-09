@@ -7,9 +7,9 @@ var run = require('../controllers/run');
 var router = express.Router();
 
 /**
- * @api {post} /runs/new create run
+ * @api {post} /runs/new Create run
  * @apiName CreateRun
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiParam {String} name Run name
  * @apiParam {String} location Location of run
@@ -46,9 +46,9 @@ var router = express.Router();
 router.post('/new', run.createRun);
 
 /**
- * @api {get} /runs/all GET runs collection
+ * @api {get} /runs/all Get run collection
  * @apiName getRunCollection
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiSuccess {String} _id Unique Run ID
  * @apiSuccess {String} location Location of run
@@ -82,9 +82,9 @@ router.post('/new', run.createRun);
 router.get('/all', run.getRuns);
 
 /**
- * @api {get} /runs/public GET public runs collection
+ * @api {get} /runs/public Get public runs collection
  * @apiName getPublicRunCollection
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiSuccess {String} _id Unique Run ID
  * @apiSuccess {String} location Location of run
@@ -123,7 +123,7 @@ router.get('/open/:_id', run.getOnePublicRun);
 /**
  * @api {post} /runs/:_id Join a run
  * @apiName joinRun
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiParam {ObjectId} followers unique Id
  *
@@ -156,9 +156,9 @@ router.get('/open/:_id', run.getOnePublicRun);
 router.post('/:_id/join', run.joinRun);
 
 /**
- * @api {post} /runs/:_id unfollow a run
+ * @api {post} /runs/:_id Unfollow a run
  * @apiName unfollowRun
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiParam {ObjectId} followers unique Id
  *
@@ -189,9 +189,9 @@ router.post('/:_id/join', run.joinRun);
 router.post('/:_id/unfollow', run.unfollowRun);
 
 /**
- * @api {get} /runs/:_id GET one run
+ * @api {get} /runs/:_id Get one run
  * @apiName getRun
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiSuccess {String} _id Unique Run ID
  * @apiSuccess {String} location Location of run
@@ -222,9 +222,9 @@ router.get('/:_id/followers', run.getFollowers);
 router.delete('/:_id', run.removeRun);
 
 /**
- * @api {put} /runs/:_id update run
+ * @api {put} /runs/:_id Update run
  * @apiName updateRun
- * @apiGroup runs
+ * @apiGroup Runs
  *
  * @apiParam {String} name Run name
  *
@@ -254,7 +254,7 @@ router.delete('/:_id', run.removeRun);
  */
 router.put('/:_id', run.updateRun);
 
-
+router.get(':_id/followers', run.getFollowers);
 // Export Router
 module.exports = router;
 

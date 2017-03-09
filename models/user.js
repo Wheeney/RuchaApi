@@ -1,10 +1,9 @@
 // Load Module Dependencies
-var mongoose  = require('mongoose');
-var bcrypt = require('bcrypt');
-var moment = require('moment');
-
-var config = require('../config');
-var debug  = require('debug')('rucha-api');
+var mongoose = require('mongoose');
+var bcrypt   = require('bcrypt');
+var moment   = require('moment');
+var config   = require('../config');
+var debug    = require('debug')('rucha-api');
 
 var Schema  = mongoose.Schema;
 
@@ -24,13 +23,17 @@ var UserSchema = new Schema({
   
 }, { versionKey: false });
 
+UserSchema.statics.attributes = {
+  password:0,
+  confirmPassword:0,
+  newPassword:0
+};
+
 //Add a pre save hook
 UserSchema.pre('save', function preSaveHook(next){
   debug('presave user');
 
   let model = this;
-
-
 
   //Generate a salt factor
 
@@ -46,7 +49,6 @@ UserSchema.pre('save', function preSaveHook(next){
       model.password = hash;
       model.date_created = now;
       model.last_modified = now;
-
       next();      
     });
   });
@@ -54,10 +56,10 @@ UserSchema.pre('save', function preSaveHook(next){
 
 //compare password
 UserSchema.methods.checkPassword = function checkPassword(password, cb){
-  bcrypt.compare(password, this.password, function done(err, res){
+  bcrypt.compare(password, this.password, function done(err, isMatch){
     if (err){ return next(err); }
 
-    cb(null, res);
+    cb(null, isMatch);
   });
 };
 

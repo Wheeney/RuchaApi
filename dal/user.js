@@ -4,9 +4,8 @@
 var debug  = require('debug')('rucha-api');
 var moment = require('moment');
 var User   = require('../models/user');
-var Promise = require('bluebird');
-
 var population = [{path:'profile'}];
+var returnFields = User.attributes;
 
 /**
  * create a new user
@@ -25,7 +24,7 @@ exports.create = (userData, cb)=>{
         if(err) { return next(err); };
         
         if(existingUser){
-            return cb(new Error('User exists yawa!'));
+            return cb(new Error('User already exists!'));
         };
 
        //create new user if one does not exist
@@ -45,102 +44,77 @@ exports.create = (userData, cb)=>{
 
 /**
  * Delete a user
+ * 
  * @desc delete data of the user with the given id
- * 
  * @param {object} query  Query object
- * @param {function} cb  callback for once delete is complete
- * 
+ * @param {function} cb  callback for once delete is complete 
  */
-exports.delete = function deleteItem(query, cb){
+exports.delete = (query, cb)=>{
     debug('deleting user:', query);
 
-    User    
-        .findOne(query)
-        .populate(population)
-        .exec(function deleteUser(err, user){
-            if(err){ return cb(err);}
+    var Promise = User.findOne(query, returnFields).populate(population).exec()
+    .then(user=>{
+        if(!user){ return cb(null, {});}
 
-            if(!user){
-                return cb(null, {});
-            }
-
-            user.remove(function(err){
-                if(err){ return next(err);}
-                cb(null, user);
-            });
-            return;
+        user.remove(user=>{ return cb(null, user);
+        })
+        .catch(err=>{
+            return cb(err);
         });
+    });
 };
 /**
  * update a user
- * @desc update data of a user with a given id
  * 
+ * @desc update data of a user with a given id 
  * @param {object} query  Query object
  * @param {object} updates update data
  * @param {function} cb  callback for once update is complete
- * 
  */
-exports.update = function update(query, updates, cb){
+exports.update = (query, updates,cb)=>{
     debug('updating user:', query);
-    
+
     var now = moment().toISOString();
     updates.last_modified = now;
 
-    User
-    .findOneAndUpdate(query, updates)
-    .populate(population)
-    .exec(function updateUser(err, user) {
-      if(err) {
-        return cb(err);
-      }
-      cb(null, user || {});
+    var Promise = User.findOneAndUpdate(query, updates, returnFields).populate(population).exec()
+    .then(user=>{ return cb(null, user || {});
+    })
+    .catch(err=>{ return cb(err);
     });
-    return;
 };
 
 /**
  * Get a user
- * @desc get a user with a specific id from db
  * 
+ * @desc get a user with a specific id from db 
  * @param {object} query  Query object
  * @param {function} cb  callback for once fetch is complete
  */
-exports.get = function get(query, cb){
-    debug('dal:Fetching user:', query);
+exports.get = (query, cb)=>{
+    debug('fetching user:', query);
 
-   User
-    .findOne(query)
-    .populate(population)
-    .exec(function(err, user) {
-      if(err) {
-        return cb(err);
-      }
-
-      cb(null, user || {});
+    var Promise =User.findOne(query, returnFields).populate(population).exec()
+    .then(user=>{ return cb(null, user || {});
+    })
+    .catch(err=>{ return cb(err);
     });
-    return;
 };
     
 /**
  * Get a collection of users
- * @desc Get a collection of users from the database
  * 
+ * @desc Get a collection of users from the database
  * @param {object} query  Query object
  * @param {Function} cb Callback for once fetch is complete
  */
-exports.getCollection = function getCollection(query, cb){
-    debug('Getting a collection of users');
+exports.getCollection = (query, cb)=>{
+    debug('Fetching a collection of users');
 
-    User
-    .find(query)
-    .populate(population)
-    .exec(function getUsersCollection(err, users) {
-      if(err) {
-        return cb(err);
-      }
-
-      return cb(null, users);
-  });
-  return;
+    var Promise = User.find(query, returnFields).populate(population).exec()
+    .then(users=>{ return cb(null, users);
+    })
+    .catch(err=>{ return cb(err);
+    });
 };
 

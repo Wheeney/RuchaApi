@@ -1,19 +1,21 @@
+'use strict'
 /**
  * Load module dependencies
  */
 var EventEmitter = require('events').EventEmitter;
-
 var moment       = require('moment');
 var debug        = require('debug')('rucha-api');
-
-var userDal      = require('../dal/user');
-var calculatorDal       = require('../dal/calculator');
-var profileDal   = require('../dal/profile');
+var userDal       = require('../dal/user');
+var calculatorDal = require('../dal/calculator');
+var profileDal    = require('../dal/profile');
 
 /**
  * Create a calculator
  * 
  * @desc create a calculator and save it in the db
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher 
  */
 exports.createCalculator = function createCalculator(req, res, next){
     debug('creating a calculator');

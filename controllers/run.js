@@ -1,3 +1,4 @@
+'use strict'
 /**
  * Load module dependencies
  */
@@ -172,7 +173,7 @@ exports.getRuns = (req, res, next)=>{
 exports.getPublicRuns =(req, res, next)=>{
     debug('Fetching all open runs');
 
-    var query = {};
+    var query = {visibility:'public'};
     
     runDal.getCollection(query, function getRunCollections(err, runs){
         if(err){
@@ -343,6 +344,6 @@ exports.getFollowers = (req, res, next)=>{
     runDal.get(query, function done(err, run){
         if(err){ return next(err);}
 
-        runDal.getCollection()
+        runDal.getCollection();
     });
 }

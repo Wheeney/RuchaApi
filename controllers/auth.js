@@ -1,6 +1,8 @@
 //Load module dependencies
 var EventEmitter = require('events').EventEmitter;
 var crypto = require('crypto');
+var mailgun = require('../config/mailgun');
+
 
 var debug = require('debug')('rucha-api');
 var moment = require('moment');
@@ -165,66 +167,50 @@ exports.logout = function logout(req, res,next){
     workflow.emit('verifyToken');
 };
 
-
 /**
- * Update password
+ * Forgot password 
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher 
+ * 
  */
-exports.updatePassword = function updatePassword(req, res, next){
-    debug('updating password:', req.body.password);
+exports.forgotPassword = (req, res, next)=> {
+  var email = req.body.email;
 
-    var workflow = new EventEmitter();
+  userDal.get({ email }, (err, existingUser) => {
+    // If user is not found, return error
+    if (err || existingUser == null) {
+      res.status(422).json({ error: 'Your request could not be processed as entered. Please try again.' });
+      return next(err);
+    }
 
-    workflow.on('validatePass', function validatePass(){
-        debug('validating password');
+      // If user is found, generate and save resetToken
 
-        req.checkBody('password', 'password invalid').notEmpty();
-        req.checkBody('newPassword', 'password invalid').notEmpty();
-        req.checkBody('confirmPassword', 'password mismatch').equals(req.body.confirmPassword);
+      // Generate a token with Crypto
+    crypto.randomBytes(48, (err, buffer) => {
+      var resetToken = buffer.toString('hex');
+      if (err) { return next(err); }
 
-        var errs = req.validationErrors();
-        if(errs){
-            res.status(400).json(errs);
-            return;
-        }
-        workflow.emit('verifyUser');
-    
+      existingUser.resetPasswordToken = resetToken;
+      existingUser.resetPasswordExpires = Date.now() + 3600000; 
+
+      existingUser.save((err) => {
+          // If error in saving token, return it
+        if (err) { return next(err); }
+
+        var message = {
+          subject: 'Reset Password',
+          text: `${'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+            'http://'}${req.headers.host}/reset-password/${resetToken}\n\n` +
+            `If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        };
+
+          // Otherwise, send user email via Mailgun
+        mailgun.sendEmail(existingUser.email, message);
+
+        return res.status(200).json({ message: 'Please check your email for the link to reset your password.' });
+      });
     });
-
-    workflow.on('verifyUser', function verifyUser(){
-        debug('verifying passwords match');
-
-        userDal.get({_id:req.params._id}, function done(err, user){
-            if(err){ return next(err);}
-
-            if(!user._id){
-                res.status(404).json({ message:'user invalid'});
-                return;
-            }
-            workflow.emit('validatePass', user);
-        });
-    });
-
-    workflow.on('validatePass', function validatePass(user){
-        user.checkPassword(req.body.password, function done(err, isMatch){
-            if(err){ return next(err);}
-
-            if(!isMatch){
-                res.status(403).json({message:'wrong password'});
-                return;
-            }
-            workflow.emit('updatePass', user);
-        });
-    });
-
-    workflow.on('updatePass', function updatePass(user){
-        debug('sasa lets update the password');
-
-        var newPassword = req.body.newPassword;
-        userDal.update({_id:req.params._id}, { password:req.body.newPassword}, function(err, user){
-            if(err){ return next(err);}
-
-            res.json(user);
-        })
-    })
-    workflow.emit('validatePass');
-} 
+  });
+};

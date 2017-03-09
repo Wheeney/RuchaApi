@@ -2,7 +2,7 @@
  * Load module dependencies
  */
 module.exports = {
-    HTTP_PORT : 9000,
+    HTTP_PORT : 8888,
 
     //MONGODB URL
     MONGODB_URL : 'mongodb://localhost/rucha',

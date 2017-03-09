@@ -1,17 +1,15 @@
 /**
  * Load module dependencies
  */
-var debug = require('debug')('rucha-api');
-var moment = require('moment');
-
-var Profile = require('../models/profile');
-
+var debug      = require('debug')('rucha-api');
+var moment     = require('moment');
+var Profile    = require('../models/profile');
 var population = [{ path:'user'}];
 
 /**
  * create a profile
- * @desc create a new profile and save the data in the database
  * 
+ * @desc create a new profile and save the data in the database 
  * @param {object} profileData  data for the profile being created.
  * @param {function} cb  callback for once the profile has been created
  */
@@ -37,34 +35,28 @@ exports.create = function create(profileData, cb){
     });
 };
 
+
 /**
  * Delete a profile
- * @desc delete data of the profile with the given id
  * 
+ * @desc delete data of the profile with the given id 
  * @param {object} query  Query object
  * @param {function} cb  callback for once delete is complete
  */
-exports.delete = function deleteItem(query, cb){
+exports.delete = (query, cb)=>{
     debug('deleting profile:', query);
 
-    Profile
-             .findOne(query)
-             .populate(population)
-             .exec(function deleteProfile(err, profile){
-                 if(err){ return cb(err); }
+    var Promise = Profile.findOne(query).populate(population).exec()
+    .then(profile=>{
+        if(!profile){ return cb(null, {});}
 
-                 if(!profile){
-                     return cb(null, {});
-                 };
+        profile.remove(profile=>{ return cb(null, profile);
+        })
+        .catch(err=>{ return cb(err);
+        });
+    });
+};
 
-                 profile.remove(function(err){
-                     if(err){ return cb(err);}
-
-                     cb(null, profile);
-                 });
-                 return;
-             });
-            };
 
 /**
  * update a profile
@@ -73,57 +65,54 @@ exports.delete = function deleteItem(query, cb){
  * @param {object} query  Query object
  * @param {object} updates update data
  * @param {function} cb  callback for once update is complete
- * 
  */
-exports.update = function update(query, updates, cb){
+exports.update = (query, updates, cb)=>{
     debug('updating profile:', query);
-    
+
     var now = moment().toISOString();
     updates.last_modified = now;
 
-    Profile
-       .findOneAndUpdate(query, updates)
-       .populate(population)
-       .exec(function updateProfile(err, profile){
-           if (err){ return cb(err);}
-
-           cb(null, profile || {});
-       });
+    var Promise = Profile.findOneAndUpdate(query, updates).populate(population).exec()
+    .then(profile=>{ return cb(null, profile);
+    })
+    .catch(err=>{ return cb(err);
+    });
 };
+
+
 /**
  * Get a profile
- * @desc get a profile with a specific id from db
  * 
+ * @desc get a profile with a specific id from db 
  * @param {object} query  Query object
  * @param {function} cb  callback for once fetch is complete
  */
-exports .get = function get(query, cb){
-    debug('Fetching profile:', query);
-    
-    Profile
-       .findOne(query)
-       .populate(population)
-       .exec(function fetchProfile(err, profile){
-           if(err){ return cb(err);}
-           cb(null, profile);
-       });
+exports.get = (query, cb)=>{
+    debug('fetching profile:', query);
+
+    var Promise = Profile.findOne(query).populate(population).exec()
+    .then(profile=>{ return cb(null, profile || {});
+    })
+    .catch(err=>{ return cb(err);
+    });
 };
+
+
 /**
  * Get a collection of profiles
- * @desc Get a collection of profiles from the database
  * 
+ * @desc Get a collection of profiles from the database 
  * @param {object} query  Query object
  * @param {Function} cb Callback for once fetch is complete
  */
-exports.getCollection = function getCollection(query, cb){
+exports.getCollection = (query, cb)=>{
     debug('Getting a collection of profiles');
-    Profile
-       .find(query)
-       .populate(population)
-       .exec(function getProfilesCollection(err, profiles){
-           if(err){ return cb(err);}
-           cb(null, profiles);
-       });
+
+    var Promise =Profile.find(query).populate(population).exec()
+    .then(profiles=>{ return cb(null, profiles);
+    })
+    .catch(err=>{ return cb(err);
+    });
 };
 
 

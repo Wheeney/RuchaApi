@@ -1,45 +1,35 @@
-//Access layer for token
-
+'use strict'
 /**
  * Load module dependencies
  */
-var debug = require('debug')('rucha-api');
-var moment = require('moment');
-
-var Token = require('../models/token');
-
+var debug      = require('debug')('rucha-api');
+var moment     = require('moment');
+var Token      = require('../models/token');
 var population = [{path:'user'}];
+var returnFields = Token.attributes;
+
+
 /**
  * create a new token.
+ * 
  * @desc  creates a new token and saves them in the database
- *
  * @param {Object}  tokenData  Data for the token to create
  * @param {Function} cb       Callback for once saving is complete
  */
-exports.create = function create(tokenData, cb) {
-  debug('creating a new token');
+exports.create = (tokenData, cb)=>{
+    debug('Creating a new token');
 
-  // Create token
-  var newToken  = new Token(tokenData);
+    //create a new token
+    var newToken = new Token(tokenData);
+    newToken.save((err, token)=>{
+        if(err){ return cb(err); };
 
-  newToken.save(function saveToken(err, data) {
-    if (err) {
-      return cb(err);
-    }
-
-
-    exports.get({ _id: data._id }, function (err, token) {
-      if(err) {
-        return cb(err);
-      }
-
-      cb(null, token);
-
+        exports.get({_id: token._id}, function(err, token){
+            if (err){ return cb(err) };
+            cb(null, token);
+        });
     });
-
-  });
-
-};
+ };
 
 /**
  * delete a token
@@ -85,7 +75,7 @@ exports.update = function update(query, updates,  cb) {
   updates.last_modified = now;
 
   Token
-    .findOneAndUpdate(query, updates)
+    .findOneAndUpdate(query, updates, returnFields)
     .populate(population)
     .exec(function updateToken(err, token) {
       if(err) {
@@ -107,7 +97,7 @@ exports.get = function get(query, cb) {
   debug('getting token ', query);
 
   Token
-    .findOne(query)
+    .findOne(query, returnFields)
     .populate(population)
     .exec(function(err, token) {
       if(err) {
@@ -128,7 +118,7 @@ exports.get = function get(query, cb) {
 exports.getCollection = function getCollection(query, cb) {
   debug('fetching a collection of tokens');
 
-  Token.find(query)
+  Token.find(query, returnFields)
     .populate(population)
     .exec(function getTokensCollection(err, tokens) {
       if(err) {

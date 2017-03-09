@@ -10,10 +10,9 @@ var router = express.Router();
 /**
  * @api {post} /users/signup Signup User
  * @apiName CreateUser
- * @apiGroup users
+ * @apiGroup Users
  *
  * @apiParam {String} email Email Address
- * @apiParam {String} password User Password
  * @apiParam {String} first_name  First Name
  * @apiParam {String} last_name Last Name
  * @apiParam {String} user_type User Type - consumer
@@ -23,7 +22,6 @@ var router = express.Router();
  *    "first_name": "olivia",
  *    "last_name": "Pope",
  *    "email": "oliviapope@gmail.com",
- *    "password": "whitehat",
  *    "user_type": "consumer"
  *  }
  *
@@ -35,7 +33,7 @@ var router = express.Router();
  * @apiSuccess {String} role User Role
  * @apiSuccess {String} realm User Realm/Group
  *
- * @apiSuccessExample Response Example:
+ * @apiSuccessExample {json} Response Example:
  *  {
  *    "_id": "58b4c977d2795f3408c20ad3",
  *    "user": "oliviapope@gmail.com",
@@ -51,7 +49,7 @@ router.post('/signup', user.createUser);
 /**
  * @api {post} /users/login Login User
  * @apiName login
- * @apiGroup auth
+ * @apiGroup Auth
  *
  * @apiParam {String} username Email Address
  * @apiParam {String} password User Password
@@ -65,7 +63,7 @@ router.post('/signup', user.createUser);
  * @apiSuccess {String} token Unique token
  * @apiSuccess {ObjectId} _id Unique User Id
  *
- * @apiSuccessExample Response Example:
+ * @apiSuccessExample {json} Response Example:
  *  {
  *  "token": "mRIT9UxkvlpppDxPHpiX",
  *  "_id": "58b4c977d2795f3408c20ad3",
@@ -77,27 +75,25 @@ router.post('/login', auth.login);
 router.post('/:_id/logout', auth.logout);
 
 /**
- * @api {get} /users/all GET users collection
+ * @api {get} /users/all Get users collection
  * @apiName getUserCollection
- * @apiGroup users
+ * @apiGroup Users
  *
  * @apiSuccess {ObjectId} _id Unique User ID
  * @apiSuccess {String} username Email Address
- * @apiSuccess {String} password Unique password
  * @apiSuccess {ObjectId} profile profile Id
  * @apiSuccess {Date} last_modified Last Modified Date
  * @apiSuccess {String} role User Role
  * @apiSuccess {Date} last_login Last login date
  * @apiSuccess {String} status user status
  *
- * @apiSuccessExample Response Example:
+ * @apiSuccessExample {json} Response Example:
  * [
  *  {
  *   "_id": "58b4c977d2795f3408c20ad3",
  *   "last_modified": "2017-02-28T01:01:34.463Z",
  *   "date_created": "2017-02-28T00:51:03.500Z",
  *   "username": "oliviapope@hotmail.com",
- *   "password": "$2a$07$FSULvTfsQOCxo9wLKEZ3u.XK9FaLSfVErAxlNo/cR8sDnpGE7i6Ea",
  *   "role": "consumer",
  *   "profile": {
  *     "_id": "58b4c977d2795f3408c20ad4",
@@ -119,7 +115,6 @@ router.post('/:_id/logout', auth.logout);
  *  "last_modified": "2017-03-02T09:01:24.324Z",
  *   "date_created": "2017-03-02T09:01:24.109Z",
  *   "username": "winnie10@yahoo.com",
- *   "password": "$2a$07$inAjIjUi7fj63uSVi7b2NO.qCIHUljoLshMgyxHUisAVv0g2hb.Fq",
  *   "role": "consumer",
  *   "profile": {
  *     "_id": "58b7df64854ee8142486663a",
@@ -140,13 +135,12 @@ router.post('/:_id/logout', auth.logout);
 router.get('/all', user.getUsers);
 
 /**
- * @api {get} /users/:_id GET one user
+ * @api {get} /users/:_id Get one user
  * @apiName fetchOne
- * @apiGroup users
+ * @apiGroup Users
  *
  * @apiSuccess {ObjectId} _id Unique User ID
  * @apiSuccess {String} username Email Address
- * @apiSuccess {String} password Unique password
  * @apiSuccess {ObjectId} profile profile Id
  * @apiSuccess {Date} last_modified Last Modified Date
  * @apiSuccess {String} role User Role
@@ -160,7 +154,6 @@ router.get('/all', user.getUsers);
  *   "last_modified": "2017-02-28T01:01:34.463Z",
  *   "date_created": "2017-02-28T00:51:03.500Z",
  *   "username": "oliviapope@hotmail.com",
- *   "password": "$2a$07$FSULvTfsQOCxo9wLKEZ3u.XK9FaLSfVErAxlNo/cR8sDnpGE7i6Ea",
  *   "role": "consumer",
  *   "profile": {
  *     "_id": "58b4c977d2795f3408c20ad4",
@@ -183,7 +176,7 @@ router.get('/:_id', user.fetchOne);
 /**
  * @api {put} /users/:_id Update User
  * @apiName updateUser
- * @apiGroup users
+ * @apiGroup Users
  *
  * @apiParam {String} username Email Address
  * 
@@ -195,7 +188,6 @@ router.get('/:_id', user.fetchOne);
  *
  * @apiSuccess {ObjectId} _id Unique User ID
  * @apiSuccess {String} username Email Address
- * @apiSuccess {String} password Unique password9
  * @apiSuccess {ObjectId} profile profile Id
  * @apiSuccess {Date} last_modified Last Modified Date
  * @apiSuccess {String} role User Role
@@ -209,7 +201,6 @@ router.get('/:_id', user.fetchOne);
  *   "last_modified": "2017-03-02T09:22:02.970Z",
  *   "date_created": "2017-02-28T00:51:03.500Z",
  *   "username": "olivia@popeAdocates.com",
- *   "password": "$2a$07$FSULvTfsQOCxo9wLKEZ3u.XK9FaLSfVErAxlNo/cR8sDnpGE7i6Ea",
  *   "role": "consumer",
  *   "profile": {
  *     "_id": "58b4c977d2795f3408c20ad4",
@@ -227,6 +218,8 @@ router.put('/:_id', user.updateUser);
 
 // DELETE /users/:userId
 router.delete('/:_id', user.delete);
+
+router.post('/forgot', auth.forgotPassword);
 
 
 
