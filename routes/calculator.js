@@ -7,7 +7,7 @@ var calculator = require('../controllers/calculator');
 var router = express.Router();
 
 //POST /calculator/new
-router.post('/new', calculator.createCalculator);
+router.post('/create', calculator.createCalculator);
 
 //GET ALL /calculator/all
 router.get('/all', calculator.getCalculators);

@@ -8,7 +8,6 @@ var ProfileSchema = new Schema({
   user          : { type: Schema.Types.ObjectId, ref: 'User' },
   runs_joined   : [{ type: Schema.Types.ObjectId, ref: 'Run' }],
   runs_created  : [{ type: Schema.Types.ObjectId, ref: 'Run' }],
-  picture       : { type: String },
   first_name    : { type: String },
   last_name     : { type: String },
   email         : { type: String, unique:true },

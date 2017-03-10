@@ -204,19 +204,19 @@ exports.getOnePublicRun =(req, res, next)=>{
 };
 
 /**
- * Fetch all followers of a specific run
+ * Fetch all participants of a specific run
  * 
- * @desc Get all followers of the same run from the database
+ * @desc Get all participants of the same run from the database
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher 
  */
-exports.getFollowers = function getFollowers(req, res, next){
-    debug('Fetching all followers of run:', req.params._id);
+exports.getParticipants = function getParticipants(req, res, next){
+    debug('Fetching all participants of run:', req.params._id);
 
     var query = {_id:req.params._id};
     
-    runDal.getFollowers(query, function getRunFollowers(err, runs){
+    runDal.getParticipants(query, function getRunParticipants(err, runs){
         if(err){
             return next(err);
         }
@@ -242,7 +242,7 @@ exports.joinRun = function joinRun(req, res, next){
     workflow.on('validateFollower', function validateFollower(){
         debug('get me the follower profile id');
         
-        req.checkBody('followers','follower id is empty').notEmpty();
+        req.checkBody('participants','follower id is empty').notEmpty();
 
         var errs = req.validationErrors();
         if(errs){
@@ -256,16 +256,16 @@ exports.joinRun = function joinRun(req, res, next){
     workflow.on('joinRun', function joinRun(){
 
         var body = req.body;
-        runDal.create({followers:req.body.followers}, function done(err, run){
+        runDal.create({participants:req.body.participants}, function done(err, run){
             if(err){ return next(err);}
 
             runDal.get(query, function getcb(err, run){
                 if (err) { return next(err);}
 
-            profileDal.update({_id:body.followers}, {$addToSet:{runs_joined:run._id}}, function updatecb1(err, profile){
+            profileDal.update({_id:body.participants}, {$addToSet:{runs_joined:run._id}}, function updatecb1(err, profile){
                 if(err){ next(err);}
 
-                runDal.update({_id:run._id},{$addToSet:{followers:body.followers}}, function updatecb2(err, run){
+                runDal.update({_id:run._id},{$addToSet:{participants:body.participants}}, function updatecb2(err, run){
                     if(err){ return next(err);}
 
                     res.json(run);
@@ -295,7 +295,7 @@ exports.unfollowRun = function unfollowRun(req, res, next){
     workflow.on('validateFollower', function validateFollower(){
         debug('validating user:', req.params._id);
 
-        req.checkBody('followers','id is empty').notEmpty();
+        req.checkBody('participants','id is empty').notEmpty();
 
         var errs = req.validationErrors();
         if(errs){
@@ -311,16 +311,16 @@ exports.unfollowRun = function unfollowRun(req, res, next){
         var query = {_id: req.params._id};
         var body = req.body;
 
-    runDal.create({followers:req.body.followers}, function done(err, run){
+    runDal.create({participants:req.body.participants}, function done(err, run){
             if(err){ return next(err);}        
 
     runDal.get(query, function unfollowcb(err, run){
         if(err){ return next(err);}
 
-        profileDal.update({_id:body.followers}, { $pull:{runs_joined:run._id}}, function updatecb3(err, profile){
+        profileDal.update({_id:body.participants}, { $pull:{runs_joined:run._id}}, function updatecb3(err, profile){
             if(err){ return next(err);}
 
-            runDal.update({_id:run._id}, {$pull:{followers:body.followers}}, function updatecb4(err, run){
+            runDal.update({_id:run._id}, {$pull:{participants:body.participants}}, function updatecb4(err, run){
                 if(err){ return next(err);}
 
                 res.json(run);
@@ -334,16 +334,19 @@ exports.unfollowRun = function unfollowRun(req, res, next){
     workflow.emit('validateFollower');
 };
 /**
- * Get all followers of a run
+ * Get all participants of a run
+ * 
+ * @desc Get participants of a specific run
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
-exports.getFollowers = (req, res, next)=>{
-    debug('get followers of run:', req.params._id);
+exports.getParticipants = (req, res, next)=>{
+    debug('get participants of run:', req.params._id);
 
     var query = { _id:req.params._id};
-
     runDal.get(query, function done(err, run){
         if(err){ return next(err);}
-
-        runDal.getCollection();
+        res.json(run.participants);   
     });
 }

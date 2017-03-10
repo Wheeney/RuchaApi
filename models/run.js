@@ -16,7 +16,7 @@ var runSchema = new Schema({
     start_time    : { type: Date },
     end_time      : { type: Date },
     creator       : { type: Schema.Types.ObjectId, ref:'User'},
-    followers     : [{ type: Schema.Types.ObjectId, ref:'User'}],
+    participants     : [{ type: Schema.Types.ObjectId, ref:'User'}],
     visibility    : { type: String, },
     date_created  : { type: Date},
     last_modified : { type: Date}

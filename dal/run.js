@@ -69,7 +69,7 @@ exports.update = (query, updates, cb) => {
 
     var Promise = Run.findOneAndUpdate(query, updates).populate(population).exec()
     .then(run => { 
-        return Promise;
+        return cb(null, run || {});
         })
         .catch(err => { return cb(err);
         });

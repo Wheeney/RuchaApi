@@ -40,10 +40,10 @@ var router = express.Router();
  *  "visibility": "public",
  *  "date_created": "2017-03-02T11:22:49.481Z",
  *  "last_modified": "2017-03-02T11:22:49.481Z",
- *  "followers": []
+ *  "participants": []
  *   }
  */
-router.post('/new', run.createRun);
+router.post('/create', run.createRun);
 
 /**
  * @api {get} /runs/all Get run collection
@@ -66,7 +66,7 @@ router.post('/new', run.createRun);
  *   "scheduled_date": "2014-03-05T00:00:00.000Z",
  *   "visibility": "public",
  *   "last_modified": "2017-03-01T07:09:43.704Z",
- *   "followers": []
+ *   "participants": []
  *  },
  *  {
  *   "_id": "58b672dad0f41016cf97230a",
@@ -75,7 +75,7 @@ router.post('/new', run.createRun);
  *   "scheduled_date": "2014-03-05T00:00:00.000Z",  
  *   "visibility": "private",
  *   "last_modified": "2017-03-01T07:09:43.704Z",
- *   "followers": []
+ *   "participants": []
  * }
  * ]
  */
@@ -102,7 +102,7 @@ router.get('/all', run.getRuns);
  *   "scheduled_date": "2014-03-05T00:00:00.000Z",
  *   "visibility": "public",
  *   "last_modified": "2017-03-01T07:09:43.704Z",
- *   "followers": []
+ *   "participants": []
  *  },
  *  {
  *   "_id": "58b672dad0f41016cf97230a",
@@ -111,7 +111,7 @@ router.get('/all', run.getRuns);
  *   "scheduled_date": "2014-03-05T00:00:00.000Z",  
  *   "visibility": "public",
  *   "last_modified": "2017-03-01T07:09:43.704Z",
- *   "followers": []
+ *   "participants": []
  * }
  * ]
  */
@@ -125,11 +125,11 @@ router.get('/open/:_id', run.getOnePublicRun);
  * @apiName joinRun
  * @apiGroup Runs
  *
- * @apiParam {ObjectId} followers unique Id
+ * @apiParam {ObjectId} participants unique Id
  *
  * @apiParamExample Request Example:
  *  {
- *  "followers":"58b67331d0f41016cf97230d"
+ *  "participants":"58b67331d0f41016cf97230d"
  *  } 
  *
  * @apiSuccess {String} _id Unique Run ID
@@ -148,7 +148,7 @@ router.get('/open/:_id', run.getOnePublicRun);
  *  "visibility": "public",
  *  "date_created": "2017-03-02T11:22:49.481Z",
  *  "last_modified": "2017-03-02T11:22:49.481Z",
- *  "followers": [
+ *  "participants": [
  *    58b67331d0f41016cf97230d
  * ]
  *   }
@@ -160,11 +160,11 @@ router.post('/:_id/join', run.joinRun);
  * @apiName unfollowRun
  * @apiGroup Runs
  *
- * @apiParam {ObjectId} followers unique Id
+ * @apiParam {ObjectId} participants unique Id
  *
  * @apiParamExample Request Example:
  *  {
- *  "followers":"58b67331d0f41016cf97230d"
+ *  "participants":"58b67331d0f41016cf97230d"
  *  } 
  *
  * @apiSuccess {String} _id Unique Run ID
@@ -183,7 +183,7 @@ router.post('/:_id/join', run.joinRun);
  *  "visibility": "public",
  *  "date_created": "2017-03-02T11:22:49.481Z",
  *  "last_modified": "2017-03-02T11:22:49.481Z",
- *  "followers": []
+ *  "participants": []
  *   }
  */
 router.post('/:_id/unfollow', run.unfollowRun);
@@ -209,14 +209,14 @@ router.post('/:_id/unfollow', run.unfollowRun);
  *   "scheduled_date": "2014-03-05T00:00:00.000Z",
  *   "visibility": "public",
  *   "last_modified": "2017-03-01T07:09:43.704Z",
- *   "followers": []
+ *   "participants": []
  * }
  * 
  */
 router.get('/:_id', run.getRun);
 
-//GET /runs/runId/followers
-router.get('/:_id/followers', run.getFollowers);
+//GET /runs/runId/participants
+router.get('/:_id/participants', run.getParticipants);
 
 //DELETE /runs/runId
 router.delete('/:_id', run.removeRun);
@@ -249,12 +249,12 @@ router.delete('/:_id', run.removeRun);
  *  "visibility": "public",
  *  "date_created": "2017-03-02T11:22:49.481Z",
  *  "last_modified": "2017-03-02T11:22:49.481Z",
- *  "followers": []
+ *  "participants": []
  *   }
  */
 router.put('/:_id', run.updateRun);
 
-router.get(':_id/followers', run.getFollowers);
+router.get(':_id/participants', run.getParticipants);
 // Export Router
 module.exports = router;
 

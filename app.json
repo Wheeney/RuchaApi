@@ -1,7 +1,0 @@
-{
-  "name": "Rucha-API",
-  "description": "Rucha app API",
-  "repository": "http://git.gebeya.com/Rucha/BackEnd.git",
-  "keywords": ["node", "express", "static"]
-  
-}

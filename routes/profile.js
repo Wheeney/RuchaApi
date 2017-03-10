@@ -147,6 +147,7 @@ router.get('/:_id', profile.getProfile);
  */
 router.put('/:_id', profile.updateProfile);
 
+router.get('/:_id/joined', profile.getRunsJoined);
 
 // Export Router
 module.exports = router;

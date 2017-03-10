@@ -54,3 +54,21 @@ exports.getProfiles = function getProfiles(req, res, next) {
         res.json(profiles);
     });
 };
+
+/**
+ * Get runs joined
+ * 
+ * @desc Get all the runs joined by a apecific user
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ */
+exports.getRunsJoined = (req, res, next)=>{
+    // debug('get participants of run:', req.params._id);
+
+    var query = { _id:req.params._id};
+    profileDal.get(query, function done(err, profile){
+        if(err){ return next(err);}
+        res.json(profile.runs_joined);   
+    });
+}
