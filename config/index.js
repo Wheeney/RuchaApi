@@ -5,7 +5,7 @@ module.exports = {
     HTTP_PORT : 8888,
 
     //MONGODB URL
-    MONGODB_URL : 'mongodb://localhost/rucha',
+    MONGODB_URL : 'mongodb://localhost/rucha'|| 'http://127.0.0.1:20205',
     //salt value length
     SALT_LENGTH: 7,
 
@@ -16,4 +16,5 @@ module.exports = {
 
     // Configuring Mailgun domain for sending transactional email
     mailgun_domain: 'mailgun domain here'
+
 };

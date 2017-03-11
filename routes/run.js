@@ -45,6 +45,8 @@ var router = express.Router();
  */
 router.post('/create', run.createRun);
 
+
+
 /**
  * @api {get} /runs/all Get run collection
  * @apiName getRunCollection
@@ -254,7 +256,7 @@ router.delete('/:_id', run.removeRun);
  */
 router.put('/:_id', run.updateRun);
 
-router.get(':_id/participants', run.getParticipants);
+
 // Export Router
 module.exports = router;
 
