@@ -5,7 +5,7 @@ module.exports = {
     HTTP_PORT : 8888,
 
     //MONGODB URL
-    MONGODB_URL : 'mongodb://localhost/rucha'|| 'http://127.0.0.1:20205',
+    MONGODB_URL : 'mongodb://localhost/rucha'|| 'http://127.0.0.1:8888',
     //salt value length
     SALT_LENGTH: 7,
 
