@@ -1,6 +1,7 @@
 // Load Module Dependencies
 
-var debug = require('debug')('rucha-api');
+var debug   = require('debug')('rucha-api');
+var request = require('request');
 
 var profileDal  = require('../dal/profile');
 
@@ -72,3 +73,27 @@ exports.getRunsJoined = (req, res, next)=>{
         res.json(profile.runs_joined);   
     });
 }
+
+/**
+ * Get users coordinates(lat, long)
+ * 
+ * @desc Get all the runs joined by a apecific user
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ */
+exports.getCoordinates = (req, res, next)=>{
+    debug('Getting users coordinates');
+    
+    profileDal.get({_id:req.params._id}, function getcb(err, profile){
+        if(err){ return next(err);}
+        
+        var query = profile.city;
+        request('https://maps.googleapis.com/maps/api/geocode/json?address='+query+'&key=AIzaSyDlweacuTHT3rxacwQGYdvotc1yKd2Bs7g', function (err, response, body) {
+            if (!err && response.statusCode == 200) {
+                console.log(body);
+                res.send(body); 
+            }
+        });
+    });
+};

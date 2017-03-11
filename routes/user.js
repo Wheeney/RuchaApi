@@ -215,6 +215,7 @@ router.get('/:_id', user.fetchOne);
  * }
  */
 router.put('/:_id', user.updateUser);
+router.get('/:_id/coordinates', user.getCoordinates);
 
 // DELETE /users/:userId
 router.delete('/:_id', user.delete);

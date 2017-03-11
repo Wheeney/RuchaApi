@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter;
 var crypto       = require('crypto');
 var debug        = require('debug')('rucha-api');
 var moment       = require('moment');
+var request      = require('request');
 
 var config       = require('../config');
 var userDal      = require('../dal/user');
@@ -110,14 +111,6 @@ exports.fetchOne = (req, res, next) => {
         res.json(user);
     });
 };
-exports.fetchOne = (req, res, next)=>{
-    debug('Fetching user:', req.params._id);
-
-    var query = { _id: req.params._id };
-
-    var Promise = userDal.get(query).then
-}
-
 /**
  * Update the user
  * 
@@ -187,3 +180,16 @@ exports.getUsers = (req, res, next) => {
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher 
  */
+
+/**
+ * Get users coordinates(lat, long)
+ */
+exports.getCoordinates = function getCoordinates(req, res, next){
+    debug('Getting coordinates of location:',req.body.city);
+    
+    profileDal.get({_id:req.params._id}, function getcb(err, profile){
+        if(err){ return next(err);}
+
+        res.json(profile.city);
+     });
+};

@@ -5,7 +5,6 @@ var profileRouter = require('./profile');
 var runRouter     = require('./run');
 var forecastRouter= require('./forecast');
 var calculatorRouter = require('./calculator');
-var geocodeRouter = require('./geocode');
 
 // Export Router Initializater
 module.exports = function initRouter(app) {
@@ -21,9 +20,6 @@ module.exports = function initRouter(app) {
 
   //Forecast Endpoint
   app.use('/weather', forecastRouter);
-
-  //GetCoordinates Endpoint
-  app.use('/coordinates', geocodeRouter);
 
   //Calculator Endpoint
   app.use('/calculator', calculatorRouter);

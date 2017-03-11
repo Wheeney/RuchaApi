@@ -147,6 +147,9 @@ router.get('/:_id', profile.getProfile);
  */
 router.put('/:_id', profile.updateProfile);
 
+router.get('/:_id/coordinates', profile.getCoordinates);
+
+
 router.get('/:_id/joined', profile.getRunsJoined);
 
 // Export Router
