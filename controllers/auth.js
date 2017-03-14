@@ -75,6 +75,7 @@ exports.login = function login(req, res, next){
   });
 
   workflow.on('generateToken', function generateToken(user){
+      debug('generating token')
             tokenDal.get({ user: user._id}, function done(err, token){
                 if(err){ return next(err);}
 

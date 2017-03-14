@@ -1,13 +1,17 @@
 // Load Module Dependencies
 
-var debug   = require('debug')('rucha-api');
-var request = require('request');
+var debug      = require('debug')('rucha-api');
+var request    = require('request');
 
-var profileDal  = require('../dal/profile');
-
+var profileDal = require('../dal/profile');
 
 /**
  * Get Profile
+ * 
+ * @desc Get the profile of a specific user
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
 exports.getProfile = function getProfile(req, res, next) {
   debug('Fetching user profile:', req.params._id);
@@ -25,6 +29,11 @@ exports.getProfile = function getProfile(req, res, next) {
 
 /**
  * Update Profile
+ * 
+ * @desc Update the profile a apecific user
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
 exports.updateProfile = function updateProfile(req, res, next) {
   debug('updating user profile:', req.params._id);
@@ -39,10 +48,13 @@ exports.updateProfile = function updateProfile(req, res, next) {
     });
 };
 
-
-
 /**
  * Get Profiles
+ * 
+ * @desc Get a collection of users
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
 exports.getProfiles = function getProfiles(req, res, next) {
   debug('Fetching all user profiles');
@@ -97,3 +109,27 @@ exports.getCoordinates = (req, res, next)=>{
         });
     });
 };
+
+/**
+ * Accept invitation
+ */
+exports.acceptInvite = function acceptInvite(req, res, next){
+    debug('accept invitation');
+    
+    if(run_invitation.length = 0){
+        return;
+    }else{
+        inviteDal.update({_id:invite._id}, {$pull:{pendingInvites:body.pendingInvites}, $addToSet:{acceptedInvites:body.acceptedInvites}}, function updatecb(err, invite){
+            if(err){ return next(err);}
+            
+            profileDal.update({_id:profile._id}, {$pull:{run_invitation:body.run_invitation}, $addToSet:{runs_joined:body.runs_joined}}, function updatecb2(err, profile){
+                if(err){ return next(err);}
+
+                res.json(profile);
+            })
+
+
+        })
+    }
+    
+}

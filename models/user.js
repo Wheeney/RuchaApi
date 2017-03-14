@@ -23,11 +23,11 @@ var UserSchema = new Schema({
   
 }, { versionKey: false });
 
-UserSchema.statics.attributes = {
-  password:0,
-  confirmPassword:0,
-  newPassword:0
-};
+// UserSchema.statics.attributes = {
+//   password:0,
+//   confirmPassword:0,
+//   newPassword:0
+// };
 
 //Add a pre save hook
 UserSchema.pre('save', function preSaveHook(next){
@@ -57,7 +57,7 @@ UserSchema.pre('save', function preSaveHook(next){
 //compare password
 UserSchema.methods.checkPassword = function checkPassword(password, cb){
   bcrypt.compare(password, this.password, function done(err, isMatch){
-    if (err){ return next(err); }
+    if (err){ return cb(err); }
 
     cb(null, isMatch);
   });

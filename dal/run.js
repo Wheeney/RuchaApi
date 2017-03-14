@@ -84,7 +84,7 @@ exports.update = (query, updates, cb) => {
  * @param {function} cb  callback for once fetch is complete
  */
 exports.get = (query, cb) => {
-    debug('fetching user:', query);
+    debug('fetching run:', query);
 
     var Promise = Run.findOne(query).populate(population).exec()
     .then(run => { 
@@ -110,5 +110,17 @@ exports.getCollection = (query, cb) => {
     .then(runs => { return cb(null, runs);
     })
     .catch(err => { return cb(err);
+    });
+};
+/**
+ * search
+ */
+exports.search = (query, cb)=>{
+    debug('searching.....');
+
+    var Promise = Run.find(query).populate(population).exec()
+    .then(docs=>{ return cb(docs);
+    })
+    .catch(err=>{ return cb(err);
     });
 };

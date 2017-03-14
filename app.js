@@ -8,8 +8,8 @@ var partialResponse = require('express-partial-response');
 var morgan      = require('morgan');
 
 var config      = require('./config');
-
 var router      = require('./routes');
+var authenticate = require('./lib/authenticate');
 
 // Connect to Mongodb
 mongoose.connect(config.MONGODB_URL);
@@ -32,14 +32,19 @@ mongoose.connection.on('error', function mongodbErrorListener() {
 // Initialize app
 var app = express();
 
+// Authentication Middleware
+app.use(authenticate().unless({
+  path: ['/users/login', '/users/signup']
+}));
+
 // Set Middleware
 app.use(partialResponse());
 app.use(bodyParser.json());
 app.use(morgan('dev'));
 
+
 // Set Validator
 app.use(validator());
-
 
 
 // Set Routes
@@ -49,3 +54,5 @@ router(app);
 app.listen(config.HTTP_PORT, function connectionListener() {
   debug('API Server running on port %s', config.HTTP_PORT);
 });
+
+module.exports = app;

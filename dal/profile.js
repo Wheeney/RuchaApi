@@ -4,7 +4,7 @@
 var debug      = require('debug')('rucha-api');
 var moment     = require('moment');
 var Profile    = require('../models/profile');
-var population = [{ path:'user'}];
+var population = [{ path:'user'},{path:'invite'},{path:'run'}];
 
 /**
  * create a profile

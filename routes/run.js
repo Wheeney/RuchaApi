@@ -83,6 +83,8 @@ router.post('/create', run.createRun);
  */
 router.get('/all', run.getRuns);
 
+router.post('/search/:location', run.search);
+
 /**
  * @api {get} /runs/public Get public runs collection
  * @apiName getPublicRunCollection

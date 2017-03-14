@@ -3,6 +3,7 @@ var express   =   require('express');
 
 var user  = require('../controllers/user');
 var auth  = require('../controllers/auth');
+var authorize = require('../lib/authorize');
 
 // Create a Router
 var router = express.Router();
@@ -132,7 +133,7 @@ router.post('/:_id/logout', auth.logout);
  * }
  * ]
  */
-router.get('/all', user.getUsers);
+router.get('/all',user.getUsers);
 
 /**
  * @api {get} /users/:_id Get one user

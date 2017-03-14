@@ -8,6 +8,7 @@ var debug        = require('debug')('rucha-api');
 var userDal      = require('../dal/user');
 var runDal       = require('../dal/run');
 var profileDal   = require('../dal/profile');
+var inviteDal    = require('../dal/invite');
 
 /**
  * Create a run
@@ -350,3 +351,74 @@ exports.getParticipants = (req, res, next)=>{
         res.json(run.participants);   
     });
 }
+
+/**
+ * Search by location
+ * 
+ * @desc Search for a run by location
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ */
+exports.search =(req, res, next)=>{
+    debug('Search for a run location');
+
+    var query = {location: req.params.location};
+    
+    runDal.search(query, function getRunCollections(err, runs){
+        if(err){ return next(err); }
+
+        runs = runs.toJSON();
+        res.json(runs);
+    });
+};
+
+/**
+ * Send invites
+ */
+exports.sendInvite = function sendInvite(req, res, next){
+    debug('sending invite');
+
+    var body = req.body;
+    var workflow = new EventEmitter();
+
+    workflow.on('validateInvitation', function validateInvitation(){
+        debug('still sending yall');
+        req.checkBody('invitee','invitee id is empty').notEmpty();
+
+        var errs = req.validationErrors();
+        if(errs){
+            res.status(404);
+            res.json(errs);
+        }else{
+            workflow.emit('createInvitation');
+
+        }     
+    });
+    workflow.on('createInvitation', function createInvitation(){
+
+        var body = req.body;
+        var query = {_id: req.params._id};
+        
+        inviteDal.create({invitee:req.body.invitee}, function done(err, invite){
+            if(err){ return next(err);}
+
+            inviteDal.get(query, function getcb(err, invite){
+                if (err) { return next(err);}
+
+            profileDal.update({_id:body.invitee}, {$addToSet:{runs_invited:run._id}}, function updatecb1(err, profile){
+                if(err){ next(err);}
+
+                inviteDal.update({_id:run._id},{$addToSet:{invitee:body.invitee}}, function updatecb2(err, invite){
+                    if(err){ return next(err);}
+
+                    res.json(profile);
+                });
+            });
+    });
+})
+    })
+    workflow.emit('validateInvitation');
+     
+
+};

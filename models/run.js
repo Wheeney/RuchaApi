@@ -10,19 +10,22 @@ var moment = require('moment');
 
 // New run schema instance 
 var runSchema = new Schema({
-    name          : { type: String }, 
-    location      : { type: String },
-    scheduled_date: { type: Date},
-    start_time    : { type: Date },
-    end_time      : { type: Date },
-    creator       : { type: Schema.Types.ObjectId, ref:'User'},
-    participants     : [{ type: Schema.Types.ObjectId, ref:'User'}],
-    visibility    : { type: String, },
-    date_created  : { type: Date},
-    last_modified : { type: Date}
+    name           : { type: String }, 
+    location       : { type: String },
+    scheduled_date : { type: Date},
+    start_time     : { type: Date },
+    end_time       : { type: Date },
+    creator        : { type: Schema.Types.ObjectId, ref:'User'},
+    participants   : [{ type: Schema.Types.ObjectId, ref:'User'}],
+    invitees       : [{ type: Schema.Types.ObjectId, ref:'User'}],
+    acceptedInvites: [{ type: Schema.Types.ObjectId, ref:'User'}],
+    declinedInvites: [{ type: Schema.Types.ObjectId, ref:'User'}],
+    pendingInvites : [{ type: Schema.Types.ObjectId, ref:'User'}],
+    visibility     : { type: String, },
+    date_created   : { type: Date},
+    last_modified  : { type: Date}
     
 }, { versionKey: false });
-
 
 // Expose the run model
 module.exports = mongoose.model('Run',runSchema);
