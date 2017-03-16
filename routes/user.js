@@ -5,7 +5,7 @@ var cors = require('cors')
 
 var user      = require('../controllers/user');
 var auth      = require('../controllers/auth');
-var authorize = require('../lib/authorize');
+// var authorize = require('../lib/authorize');
 
 // Create a Router
 var router = express.Router();
@@ -84,7 +84,7 @@ router.post('/login', auth.login);
  *  "message": "success logout"
  *  }
  */
-router.post('/:_id/logout',authorize(['admin', 'consumer']), auth.logout);
+router.post('/:_id/logout', auth.logout);
 
 /**
  * @api {get} /users/all Get users collection
