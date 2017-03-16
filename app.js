@@ -10,7 +10,7 @@ var cors        = require('cors');
 
 var config      = require('./config');
 var router      = require('./routes');
-// var authenticate = require('./lib/authenticate');
+var authenticate = require('./lib/authenticate');
 
 // Connect to Mongodb
 mongoose.connect(config.MONGODB_URL);
@@ -34,9 +34,9 @@ mongoose.connection.on('error', function mongodbErrorListener() {
 var app = express();
 
 // Authentication Middleware
-// app.use(authenticate().unless({
-//   path: ['/users/login', '/users/signup']
-// }));
+app.use(authenticate().unless({
+  path: ['/users/login', '/users/signup']
+}));
 
 // Set Middleware
 app.use(partialResponse());
