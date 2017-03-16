@@ -1,5 +1,7 @@
 // Load Module Dependencies
 var express   =   require('express');
+var cors = require('cors')
+
 
 var user      = require('../controllers/user');
 var auth      = require('../controllers/auth');
@@ -144,7 +146,7 @@ router.post('/:_id/logout',authorize(['admin', 'consumer']), auth.logout);
  * }
  * ]
  */
-router.get('/all',authorize(['admin']), user.getUsers);
+router.get('/all',cors(), user.getUsers);
 
 /**
  * @api {get} /users/:_id Get one user
@@ -176,6 +178,7 @@ router.get('/all',authorize(['admin']), user.getUsers);
  *     "email": "oliviapope@hotmail.com",
  *     "consumer": "58b4c977d2795f3408c20ad5",
  *     "last_modified": "2017-02-28T00:51:03.531Z",
+ *     "run_invitation": [],
  *     "runs_created": [],
  *     "runs_joined": []
  * },
@@ -223,11 +226,16 @@ router.get('/:_id', user.fetchOne);
  *     "email": "oliviapope@hotmail.com",
  *     "consumer": "58b4c977d2795f3408c20ad5",
  *     "last_modified": "2017-02-28T00:51:03.531Z",
+ *     "run_invitation": [],
  *     "runs_created": [],
  *     "runs_joined": []
  * }
  */
 router.put('/:_id', user.updateUser);
+
+/**
+ * 
+ */
 router.get('/:_id/coordinates', user.getCoordinates);
 router.post('/:_id/verify', user.verifyUser);
 router.post('/:_id/changePass', user.updatePassword);
