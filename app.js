@@ -6,6 +6,7 @@ var mongoose    = require('mongoose');
 var validator   = require('express-validator');
 var partialResponse = require('express-partial-response');
 var morgan      = require('morgan');
+var cors        = require('cors');
 
 var config      = require('./config');
 var router      = require('./routes');
@@ -45,6 +46,8 @@ app.use(morgan('dev'));
 
 // Set Validator
 app.use(validator());
+
+app.use(cors());
 
 app.use(function(req, res, next){
   res.header("Access-Control-Allow-Origin", "*" );
