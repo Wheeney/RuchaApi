@@ -30,7 +30,6 @@ exports.createUser = (req, res, next) => {
         //validate the user
         req.checkBody('first_name', 'first_name is required!').notEmpty();
         req.checkBody('last_name', 'last_name is required!').notEmpty();
-        req.checkBody('city', 'city is empty').notEmpty();
         req.checkBody('email', 'Invalid Email').notEmpty().isEmail();
         req.checkBody('password', 'Invalid password!').notEmpty().withMessage('Password is empty').isLength(5);
         req.checkBody('user_type', 'User Type is Invalid!')
@@ -68,7 +67,6 @@ exports.createUser = (req, res, next) => {
             user: user._id,
             first_name: body.first_name,
             last_name: body.last_name,
-            city:body.city,
             email: body.email
         }, function cb(err, profile) {
             if (err) { return next(err); }
@@ -173,23 +171,158 @@ exports.getUsers = (req, res, next) => {
 };
 
 /**
- * Update password
+ * Verify Passwword
  * 
- * @desc Get one user from the database and update their password
+ * @desc Get one user from the database and verify their credentials
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher 
  */
+exports.verifyUser = function verifyUser(req, res, next){
+    debug('verify user');
+
+    var body = req.body;
+    var workflow = new EventEmitter();
+
+    workflow.on('validateUser', function validateUser(){
+        //check username and password
+        req.checkBody('username','username is empty').notEmpty();
+        req.checkBody('password', 'password mismatch').notEmpty();
+
+        var errs = req.validationErrors();
+        if(errs){
+            res.status(400).json(errs);
+            return;
+        }else{
+            workflow.emit('checkUsername');
+        };
+    })
+    workflow.on('checkUsername', function checkUsername(){
+        userDal.get({ username: req.body.username }, function done(err, user) {
+            console.log(req.body.username);
+            if(err) {
+                return next(err);
+            }
+            if(!user._id){
+                res.status(404);
+                res.json({
+                    message: 'User Not Found!'
+                });
+                return;
+            }
+            workflow.emit('checkPassword', user);
+        });
+    });
+    workflow.on('checkPassword', function checkPassword(user) {
+    // Check Password
+    user.checkPassword(req.body.password, function done(err, isOk) {
+      if(err) {
+        return next(err);
+      }
+
+      if(!isOk) {
+        res.status(403);
+        res.json({
+          message: 'Wrong Credentials!'
+        });
+        return;
+      }
+      res.send('everything ok!');
+    });
+  });
+
+    workflow.emit('validateUser');
+}
+
+/**
+ * Update Password
+ * 
+ * @desc Get one user from the database and update their password
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ */
+exports.updatePassword = function updatePassword(req, res, next){
+    debug('update password');
+
+    var body = req.body;
+    var workflow = new EventEmitter();
+
+    workflow.on('newPass', function newPass(){
+
+        req.checkBody('password', 'password is empty').notEmpty();
+        req.checkBody('newPassword', 'newPassword is empty').notEmpty();
+        req.checkBody('confirmPassword', 'password mismatch').equals(req.body.newPassword);
+
+        var errs = req.validationErrors();
+        if(errs){
+            res.status(404);
+            res.json(errs);
+        };
+        workflow.emit('verifyUser');
+    });
+
+    workflow.on('verifyUser', function verifyUser(){
+        userDal.get({_id: req.params._id }, function done(err, user) {
+            if(err) { return next(err);}
+            if(!user._id){
+                res.status(404);
+                res.json({
+                    message: 'User Not Found!'
+                });
+                return;
+            }
+            workflow.emit('verifyPass', user);
+        });
+        workflow.on('verifyPass', function verifyPass(user){
+            user.checkPassword(req.body.password, function done(err, isOk) {
+                if(err) { return next(err);}
+                if(!isOk) {
+                    res.status(403);
+                    res.json({
+                        message: 'Wrong Credentials!'
+                    });
+                    return;
+                }
+                workflow.emit('hashPass');
+            });
+        });
+        workflow.on('hashPass', function hashPass(user){
+            debug('hashing pass....');
+            var hash = user.hash(body.newPassword);
+            var updated = {password: hash};
+            var query = {_id:user._id};
+            userDal.update(query, updated, function updatecb(err, user){
+                if(err){ return next(err);}
+                res.json(user);
+            });
+        });
+    });
+    
+    workflow.emit('newPass');
+};
+
 
 /**
  * Get users coordinates(lat, long)
  */
 exports.getCoordinates = function getCoordinates(req, res, next){
-    debug('Getting coordinates of location:',req.body.city);
-    
-    profileDal.get({_id:req.params._id}, function getcb(err, profile){
+    debug('Getting coordinates of location');
+
+    profileDal.get({_id:profile._id}, function getcb(err, profile){
         if(err){ return next(err);}
 
+        if(profile.city ===' '){
+            res.status(404);
+            res.json({ 
+                message:'please enter your city'
+            });
+            return;
+    }
+    
         res.json(profile.city);
      });
+
+    
+    
 };

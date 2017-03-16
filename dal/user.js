@@ -56,10 +56,9 @@ exports.delete = (query, cb)=>{
     .then(user=>{
         if(!user){ return cb(null, {});}
 
-        user.remove(user=>{ return cb(null, user);
+        User.remove(user=>{ return cb(null, user);
         })
-        .catch(err=>{
-            return cb(err);
+        .catch(err=>{ return cb(err);
         });
     });
 };

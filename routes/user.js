@@ -1,8 +1,8 @@
 // Load Module Dependencies
 var express   =   require('express');
 
-var user  = require('../controllers/user');
-var auth  = require('../controllers/auth');
+var user      = require('../controllers/user');
+var auth      = require('../controllers/auth');
 var authorize = require('../lib/authorize');
 
 // Create a Router
@@ -72,8 +72,17 @@ router.post('/signup', user.createUser);
  */
 router.post('/login', auth.login);
 
-// POST /users/logout
-router.post('/:_id/logout', auth.logout);
+/**
+ * @api {post} /users/logout Logout User
+ * @apiName logout
+ * @apiGroup Auth
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *  {
+ *  "message": "success logout"
+ *  }
+ */
+router.post('/:_id/logout',authorize(['admin', 'consumer']), auth.logout);
 
 /**
  * @api {get} /users/all Get users collection
@@ -104,6 +113,7 @@ router.post('/:_id/logout', auth.logout);
  *     "email": "oliviapope@hotmail.com",
  *     "consumer": "58b4c977d2795f3408c20ad5",
  *     "last_modified": "2017-02-28T00:51:03.531Z",
+ *     "run_invitation": [],
  *     "runs_created": [],
  *     "runs_joined": []
  * },
@@ -125,6 +135,7 @@ router.post('/:_id/logout', auth.logout);
  *     "email": "winnie10@yahoo.com",
  *     "consumer": "58b7df64854ee8142486663b",
  *     "last_modified": "2017-03-02T09:01:24.403Z",
+ *     "run_invitation": [],
  *     "runs_created": [],
  *     "runs_joined": []
  *   },
@@ -133,10 +144,11 @@ router.post('/:_id/logout', auth.logout);
  * }
  * ]
  */
-router.get('/all',user.getUsers);
+router.get('/all',authorize(['admin']), user.getUsers);
 
 /**
  * @api {get} /users/:_id Get one user
+ * @apiPermission admin
  * @apiName fetchOne
  * @apiGroup Users
  *
@@ -217,6 +229,8 @@ router.get('/:_id', user.fetchOne);
  */
 router.put('/:_id', user.updateUser);
 router.get('/:_id/coordinates', user.getCoordinates);
+router.post('/:_id/verify', user.verifyUser);
+router.post('/:_id/changePass', user.updatePassword);
 
 // DELETE /users/:userId
 router.delete('/:_id', user.delete);

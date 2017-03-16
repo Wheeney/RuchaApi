@@ -11,6 +11,11 @@ var profileDal   = require('../dal/profile');
 
 /**
  * create an invite
+ * 
+ * @desc create an invite and store it in the database
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
 exports.createInvite = function createInvite(req, res, next){
     debug('creating an invite');
@@ -139,7 +144,7 @@ exports.getInvites = (req, res, next) => {
 };
 
 /**
- * Accept invitation
+ * Accept invitation.
  * 
  * @desc Accept invitation to profile.
  * @param {object} req HTTP request object
@@ -147,7 +152,7 @@ exports.getInvites = (req, res, next) => {
  * @param {function} next middleware dispatcher 
  */
 exports.acceptInvite = function acceptInvite(req, res, next){
-    debug('accept invitation');
+    debug('accept invite:', req.params._id);
     
     var body = req.body;
     var workflow = new EventEmitter();
@@ -157,7 +162,7 @@ exports.acceptInvite = function acceptInvite(req, res, next){
         inviteDal.get({_id:req.params._id}, function getcb(err, invite){
             if(err){ return next(err);}
             
-            profileDal.update({_id:invite.invitees}, {$unset:{run_invitation:req.body.run_invitation}}, function cb(err,profile){
+            profileDal.update({_id:invite.invitees}, {$addToSet:{runs_joined:req.body.run_invitation}}, function cb(err,profile){
                 if(err){ return next(err);}
             });
         });
