@@ -15,6 +15,7 @@ var router = express.Router();
  * @apiSuccess {String} first_name users first_name
  * @apiSuccess {String} last_name users last_name
  * @apiSuccess {String} email Email Address
+ * @apiSuccess {String} run_invitation Run invites received
  * @apiSuccess {String} runs_created Runs created by user
  * @apiSuccess {String} runs_joined Runs user has joined
  *
@@ -35,6 +36,9 @@ var router = express.Router();
  *   "first_name": "winnie",
  *   "last_name": "nyabuti",
  *   "email": "winnie883@yahoo.com",
+ *   "run_invitation": [
+ *   "58ca9edc006ad4051044efd7"
+ * ],
  *   "runs_created": [],
  *   "runs_joined": []
  * },
@@ -53,6 +57,7 @@ var router = express.Router();
  *   "first_name": "maria",
  *   "last_name": "keru",
  *   "email": "maria283@yahoo.com",
+ *   "run_invitation":[],
  *   "runs_created": [],
  *   "runs_joined": []
  * }
@@ -71,6 +76,7 @@ router.get('/all', profile.getProfiles);
  * @apiSuccess {String} first_name users first_name
  * @apiSuccess {String} last_name users last_name
  * @apiSuccess {String} email Email Address
+ * @apiSuccess {String} run_invitation Run invites received
  * @apiSuccess {String} runs_created Runs created by user
  * @apiSuccess {String} runs_joined Runs user has joined
  *
@@ -90,6 +96,9 @@ router.get('/all', profile.getProfiles);
  *   "first_name": "winnie",
  *   "last_name": "nyabuti",
  *   "email": "winnie883@yahoo.com",
+ *   "run_invitation": [
+ *   "58ca9edc006ad4051044efd7"
+ * ],
  *   "runs_created": [],
  *   "runs_joined": []
  * }

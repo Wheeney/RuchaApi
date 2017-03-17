@@ -67,6 +67,7 @@ exports.createUser = (req, res, next) => {
             user: user._id,
             first_name: body.first_name,
             last_name: body.last_name,
+            city:body.city,
             email: body.email
         }, function cb(err, profile) {
             if (err) { return next(err); }
@@ -306,23 +307,12 @@ exports.updatePassword = function updatePassword(req, res, next){
 /**
  * Get users coordinates(lat, long)
  */
-exports.getCoordinates = function getCoordinates(req, res, next){
-    debug('Getting coordinates of location');
-
-    profileDal.get({_id:profile._id}, function getcb(err, profile){
-        if(err){ return next(err);}
-
-        if(profile.city ===' '){
-            res.status(404);
-            res.json({ 
-                message:'please enter your city'
-            });
-            return;
-    }
+// exports.getCoordinates = function getCoordinates(req, res, next){
+//     debug('Getting coordinates of location:',req.body.city);
     
-        res.json(profile.city);
-     });
+//     profileDal.get({_id:req.params._id}, function getcb(err, profile){
+//         if(err){ return next(err);}
 
-    
-    
-};
+//         res.json(profile.city);
+//      });
+// };

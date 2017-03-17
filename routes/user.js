@@ -1,7 +1,5 @@
 // Load Module Dependencies
 var express   =   require('express');
-var cors = require('cors')
-
 
 var user      = require('../controllers/user');
 var auth      = require('../controllers/auth');
@@ -146,7 +144,7 @@ router.post('/:_id/logout', auth.logout);
  * }
  * ]
  */
-router.get('/all',authorize(['admin']),cors(), user.getUsers);
+router.get('/all',authorize(['admin']), user.getUsers);
 
 /**
  * @api {get} /users/:_id Get one user
@@ -236,7 +234,7 @@ router.put('/:_id',authorize(['admin']), user.updateUser);
 /**
  * 
  */
-router.get('/:_id/coordinates', user.getCoordinates);
+// router.get('/:_id/coordinates', user.getCoordinates);
 router.post('/:_id/verify', user.verifyUser);
 router.post('/:_id/changePass', user.updatePassword);
 

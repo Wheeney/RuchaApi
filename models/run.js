@@ -17,8 +17,6 @@ var runSchema = new Schema({
     end_time       : { type: Date },
     creator        : { type: Schema.Types.ObjectId, ref:'User'},
     participants   : [{ type: Schema.Types.ObjectId, ref:'User'}],
-    invitees       : [{ type: Schema.Types.ObjectId, ref:'User'}],
-    acceptedInvites: [{ type: Schema.Types.ObjectId, ref:'User'}],
     declinedInvites: [{ type: Schema.Types.ObjectId, ref:'User'}],
     pendingInvites : [{ type: Schema.Types.ObjectId, ref:'User'}],
     visibility     : { type: String, },

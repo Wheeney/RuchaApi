@@ -162,8 +162,10 @@ exports.acceptInvite = function acceptInvite(req, res, next){
         inviteDal.get({_id:req.params._id}, function getcb(err, invite){
             if(err){ return next(err);}
             
-            profileDal.update({_id:invite.invitees}, {$addToSet:{runs_joined:req.body.run_invitation}}, function cb(err,profile){
+            profileDal.update({_id:body.invitees}, {runs_joined:req.body.run_invitation}, function cb(err,profile){
                 if(err){ return next(err);}
+
+                res.json(profile);
             });
         });
     });

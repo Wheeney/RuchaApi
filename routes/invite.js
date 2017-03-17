@@ -53,7 +53,7 @@ router.get('/all', invite.getInvites);
 
 router.get('/:_id', invite.fetchInvite);
 
-router.get('/:_id/accept', invite.acceptInvite);
+router.post('/:_id/accept', invite.acceptInvite);
 
 router.put('/:_id', invite.updateInvite);
 
