@@ -69,7 +69,7 @@ exports.getProfiles = function getProfiles(req, res, next) {
 };
 
 /**
- * Get runs joined
+ * Get all runs joined by a user
  * 
  * @desc Get all the runs joined by a apecific user
  * @param {object} req HTTP request object
@@ -77,14 +77,27 @@ exports.getProfiles = function getProfiles(req, res, next) {
  * @param {function} next middleware dispatcher
  */
 exports.getRunsJoined = (req, res, next)=>{
-    // debug('get participants of run:', req.params._id);
 
     var query = { _id:req.params._id};
     profileDal.get(query, function done(err, profile){
         if(err){ return next(err);}
         res.json(profile.runs_joined);   
     });
-}
+};
+
+/**
+ * Get all runs created by a user
+ */
+exports.getRunsCreated = (req, res, next)=>{
+    debug('Get all runs created by user:', req._user._id);
+
+    var query = {_id:req.params._id};
+
+    profileDal.get(query, function done(err, profile){
+        if(err){ return next(err);}
+        res.json(profile.runs_created);
+    });
+};
 
 /**
  * Get users coordinates(lat, long)
@@ -127,9 +140,9 @@ exports.acceptInvite = function acceptInvite(req, res, next){
 
                 res.json(profile);
             })
-
-
         })
     }
     
 }
+
+

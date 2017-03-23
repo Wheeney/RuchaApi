@@ -53,6 +53,15 @@ app.use(function(req, res, next){
 // Set Routes
 router(app);
 
+// catch 404 error
+app.use(function(req, res, next) {
+  res.status(404);
+  res.json({
+    message:'Resource Requested Not Found'
+  });
+  next(err);
+});
+
 // Listen to HTTP Port
 app.listen(config.HTTP_PORT, function connectionListener() {
   debug('API Server running on port %s', config.HTTP_PORT);

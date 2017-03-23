@@ -1,89 +1,6 @@
 [
   {
     "type": "post",
-    "url": "/users/login",
-    "title": "Login User",
-    "name": "login",
-    "group": "Auth",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "username",
-            "description": "<p>Email Address</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "password",
-            "description": "<p>User Password</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request Example:",
-          "content": "{\n  \"username\": \"oliviapope@gmail.com\",\n  \"password\": \"whitehat\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "token",
-            "description": "<p>Unique token</p>"
-          },
-          {
-            "group": "Success 200",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "_id",
-            "description": "<p>Unique User Id</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Response Example:",
-          "content": "{\n\"token\": \"mRIT9UxkvlpppDxPHpiX\",\n\"_id\": \"58b4c977d2795f3408c20ad3\",\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "routes/user.js",
-    "groupTitle": "Auth"
-  },
-  {
-    "type": "post",
-    "url": "/users/logout",
-    "title": "Logout User",
-    "name": "logout",
-    "group": "Auth",
-    "success": {
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "{\n\"message\": \"success logout\"\n}",
-          "type": "json"
-        }
-      ]
-    },
-    "version": "0.0.0",
-    "filename": "routes/user.js",
-    "groupTitle": "Auth"
-  },
-  {
-    "type": "post",
     "url": "/invites/create",
     "title": "Create an invite",
     "name": "createInvite",
@@ -156,7 +73,7 @@
   {
     "type": "post",
     "url": "/runs/new",
-    "title": "Create run",
+    "title": "Create a run event",
     "name": "CreateRun",
     "group": "Runs",
     "parameter": {
@@ -235,6 +152,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -250,7 +174,98 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"power run\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
+          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"power run\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"creator\": \"olivia\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/run.js",
+    "groupTitle": "Runs"
+  },
+  {
+    "type": "delete",
+    "url": "/runs/:_id",
+    "title": "Delete a single run event",
+    "name": "deleteRun",
+    "group": "Runs",
+    "success": {
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "{}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/run.js",
+    "groupTitle": "Runs"
+  },
+  {
+    "type": "get",
+    "url": "/runs/public/:_id",
+    "title": "Get one public run event",
+    "name": "getOnePublicRun",
+    "group": "Runs",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Unique Run ID</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "location",
+            "description": "<p>Location of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "scheduled_date",
+            "description": "<p>Date of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "visibility",
+            "description": "<p>public /private</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "[\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"creator\": \"olivia\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n }\n]",
           "type": "json"
         }
       ]
@@ -262,7 +277,7 @@
   {
     "type": "get",
     "url": "/runs/public",
-    "title": "Get public runs collection",
+    "title": "Get a collection of public run events",
     "name": "getPublicRunCollection",
     "group": "Runs",
     "success": {
@@ -300,6 +315,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -315,7 +337,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "[\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n },\n {\n  \"_id\": \"58b672dad0f41016cf97230a\",\n  \"name\": \"urban swaras\",\n  \"location\": \"karura forest\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",  \n  \"visibility\": \"public\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}\n]",
+          "content": "[\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"creator\": \"olivia\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n },\n {\n  \"_id\": \"58b672dad0f41016cf97230a\",\n  \"name\": \"urban swaras\",\n  \"location\": \"karura forest\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",  \n  \"visibility\": \"public\",\n  \"creator\": \"winnie\", \n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}\n]",
           "type": "json"
         }
       ]
@@ -327,7 +349,7 @@
   {
     "type": "get",
     "url": "/runs/:_id",
-    "title": "Get one run",
+    "title": "Get one run event",
     "name": "getRun",
     "group": "Runs",
     "success": {
@@ -365,6 +387,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -380,7 +409,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}",
+          "content": "\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"creator\": \"olivia\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}",
           "type": "json"
         }
       ]
@@ -392,7 +421,7 @@
   {
     "type": "get",
     "url": "/runs/all",
-    "title": "Get run collection",
+    "title": "Get a run collection",
     "name": "getRunCollection",
     "group": "Runs",
     "success": {
@@ -430,6 +459,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -445,7 +481,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "[\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n },\n {\n  \"_id\": \"58b672dad0f41016cf97230a\",\n  \"name\": \"aberdare runners\",\n  \"location\": \"KU field\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",  \n  \"visibility\": \"private\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}\n]",
+          "content": "[\n {\n  \"_id\": \"58b7ed442e4b9419b674c3a2\",\n  \"name\": \"power run\",\n  \"location\": \"nyayo stadium\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n  \"visibility\": \"public\",\n  \"creator\": \"olivia\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n },\n {\n  \"_id\": \"58b672dad0f41016cf97230a\",\n  \"name\": \"aberdare runners\",\n  \"location\": \"KU field\",\n  \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",  \n  \"visibility\": \"private\",\n  \"creator\": \"winnie\",\n  \"last_modified\": \"2017-03-01T07:09:43.704Z\",\n  \"participants\": []\n}\n]",
           "type": "json"
         }
       ]
@@ -455,31 +491,41 @@
     "groupTitle": "Runs"
   },
   {
-    "type": "post",
-    "url": "/runs/:_id",
-    "title": "Join a run",
+    "type": "get",
+    "url": "/runs/:_id/participants",
+    "title": "Get all participants of a run event",
+    "name": "getRunParticipants",
+    "group": "Runs",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Unique participants ID</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "\n[\n  \"58d24895c2b5446a5ec60d8e\",\n  \"58b7ed442e4b9419b674c3a2\",\n  \"58cfddb2f37c247a4176da74\"\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/run.js",
+    "groupTitle": "Runs"
+  },
+  {
+    "type": "get",
+    "url": "/runs/:_id/join",
+    "title": "Join a run event",
     "name": "joinRun",
     "group": "Runs",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "participants",
-            "description": "<p>unique Id</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request Example:",
-          "content": "{\n\"participants\":\"58b67331d0f41016cf97230d\"\n}",
-          "type": "json"
-        }
-      ]
-    },
     "success": {
       "fields": {
         "Success 200": [
@@ -515,6 +561,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -530,7 +583,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": " {\n \"_id\": \"58b7ed442e4b9419b674c3a2\",\n \"name\": \"power run\",\n \"location\": \"nyayo stadium\",\n \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n \"visibility\": \"public\",\n \"date_created\": \"2017-03-02T11:22:49.481Z\",\n \"last_modified\": \"2017-03-02T11:22:49.481Z\",\n \"participants\": [\n   58b67331d0f41016cf97230d\n]\n  }",
+          "content": " {\n \"_id\": \"58b7ed442e4b9419b674c3a2\",\n \"name\": \"power run\",\n \"location\": \"nyayo stadium\",\n \"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n \"visibility\": \"public\",\n \"creator\": \"olivia\",\n \"date_created\": \"2017-03-02T11:22:49.481Z\",\n \"last_modified\": \"2017-03-02T11:22:49.481Z\",\n \"participants\": [\n   58b67331d0f41016cf97230d\n]\n  }",
           "type": "json"
         }
       ]
@@ -540,31 +593,11 @@
     "groupTitle": "Runs"
   },
   {
-    "type": "post",
-    "url": "/runs/:_id",
-    "title": "Unfollow a run",
+    "type": "get",
+    "url": "/runs/:_id/unfollow",
+    "title": "Unfollow a run event",
     "name": "unfollowRun",
     "group": "Runs",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "ObjectId",
-            "optional": false,
-            "field": "participants",
-            "description": "<p>unique Id</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "Request Example:",
-          "content": "{\n\"participants\":\"58b67331d0f41016cf97230d\"\n}",
-          "type": "json"
-        }
-      ]
-    },
     "success": {
       "fields": {
         "Success 200": [
@@ -600,6 +633,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -615,7 +655,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"power run\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
+          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"power run\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"creator\": \"olivia\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
           "type": "json"
         }
       ]
@@ -627,7 +667,7 @@
   {
     "type": "put",
     "url": "/runs/:_id",
-    "title": "Update run",
+    "title": "Update a run event",
     "name": "updateRun",
     "group": "Runs",
     "parameter": {
@@ -685,6 +725,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "creator",
+            "description": "<p>Creator of run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "last_modified",
             "description": "<p>Last Modified Date</p>"
           },
@@ -700,7 +747,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"karura runners\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
+          "content": "{\n\"_id\": \"58b7ed442e4b9419b674c3a2\",\n\"name\": \"karura runners\",\n\"location\": \"nyayo stadium\",\n\"scheduled_date\": \"2014-03-05T00:00:00.000Z\",\n\"visibility\": \"public\",\n\"creator\": \"olivia\",\n\"date_created\": \"2017-03-02T11:22:49.481Z\",\n\"last_modified\": \"2017-03-02T11:22:49.481Z\",\n\"participants\": []\n }",
           "type": "json"
         }
       ]
@@ -750,7 +797,7 @@
       },
       "examples": [
         {
-          "title": "Request Example:",
+          "title": "Request-Example:",
           "content": "{\n  \"first_name\": \"olivia\",\n  \"last_name\": \"Pope\",\n  \"email\": \"oliviapope@gmail.com\",\n  \"user_type\": \"consumer\"\n}",
           "type": "json"
         }
@@ -979,6 +1026,89 @@
     "groupTitle": "Users"
   },
   {
+    "type": "post",
+    "url": "/users/login",
+    "title": "Login User",
+    "name": "login",
+    "group": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Email Address</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>User Password</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request Example:",
+          "content": "{\n  \"username\": \"oliviapope@gmail.com\",\n  \"password\": \"whitehat\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Unique token</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "ObjectId",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>Unique User Id</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "{\n\"token\": \"mRIT9UxkvlpppDxPHpiX\",\n\"_id\": \"58b4c977d2795f3408c20ad3\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/user.js",
+    "groupTitle": "Users"
+  },
+  {
+    "type": "post",
+    "url": "/users/logout",
+    "title": "Logout User",
+    "name": "logout",
+    "group": "Users",
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "{\n\"message\": \"success logout\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/user.js",
+    "groupTitle": "Users"
+  },
+  {
     "type": "put",
     "url": "/users/:_id",
     "title": "Update User",
@@ -1125,6 +1255,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "run_invitation",
+            "description": "<p>Run invites received</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "runs_created",
             "description": "<p>Runs created by user</p>"
           },
@@ -1140,7 +1277,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "{\n  \"_id\": \"58b9b8c0e19f4a24a69343bb\",\n  \"user\": {\n    \"_id\": \"58b9b8c0e19f4a24a69343ba\",\n    \"last_modified\": \"2017-03-03T18:41:04.299Z\",\n    \"date_created\": \"2017-03-03T18:41:04.271Z\",\n    \"username\": \"winnie883@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9b8c0e19f4a24a69343bb\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"winnie\",\n  \"last_name\": \"nyabuti\",\n  \"email\": \"winnie883@yahoo.com\",\n  \"runs_created\": [],\n  \"runs_joined\": []\n}",
+          "content": "{\n  \"_id\": \"58b9b8c0e19f4a24a69343bb\",\n  \"user\": {\n    \"_id\": \"58b9b8c0e19f4a24a69343ba\",\n    \"last_modified\": \"2017-03-03T18:41:04.299Z\",\n    \"date_created\": \"2017-03-03T18:41:04.271Z\",\n    \"username\": \"winnie883@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9b8c0e19f4a24a69343bb\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"winnie\",\n  \"last_name\": \"nyabuti\",\n  \"email\": \"winnie883@yahoo.com\",\n  \"run_invitation\": [\n  \"58ca9edc006ad4051044efd7\"\n],\n  \"runs_created\": [],\n  \"runs_joined\": []\n}",
           "type": "json"
         }
       ]
@@ -1197,6 +1334,13 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "run_invitation",
+            "description": "<p>Run invites received</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "runs_created",
             "description": "<p>Runs created by user</p>"
           },
@@ -1212,7 +1356,7 @@
       "examples": [
         {
           "title": "Response Example:",
-          "content": "[\n{\n  \"_id\": \"58b9b8c0e19f4a24a69343bb\",\n  \"user\": {\n    \"_id\": \"58b9b8c0e19f4a24a69343ba\",\n    \"last_modified\": \"2017-03-03T18:41:04.299Z\",\n    \"date_created\": \"2017-03-03T18:41:04.271Z\",\n    \"username\": \"winnie883@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9b8c0e19f4a24a69343bb\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"winnie\",\n  \"last_name\": \"nyabuti\",\n  \"email\": \"winnie883@yahoo.com\",\n  \"runs_created\": [],\n  \"runs_joined\": []\n},\n {\n  \"_id\": \"58b9bc1cf123d525d4bde98e\",\n  \"user\": {\n    \"_id\": \"58b9bc1bf123d525d4bde98d\",\n    \"last_modified\": \"2017-03-03T18:55:24.027Z\",\n    \"date_created\": \"2017-03-03T18:55:23.992Z\",\n    \"username\": \"maria283@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9bc1cf123d525d4bde98e\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"maria\",\n  \"last_name\": \"keru\",\n  \"email\": \"maria283@yahoo.com\",\n  \"runs_created\": [],\n  \"runs_joined\": []\n}\n]",
+          "content": "[\n{\n  \"_id\": \"58b9b8c0e19f4a24a69343bb\",\n  \"user\": {\n    \"_id\": \"58b9b8c0e19f4a24a69343ba\",\n    \"last_modified\": \"2017-03-03T18:41:04.299Z\",\n    \"date_created\": \"2017-03-03T18:41:04.271Z\",\n    \"username\": \"winnie883@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9b8c0e19f4a24a69343bb\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"winnie\",\n  \"last_name\": \"nyabuti\",\n  \"email\": \"winnie883@yahoo.com\",\n  \"run_invitation\": [\n  \"58ca9edc006ad4051044efd7\"\n],\n  \"runs_created\": [],\n  \"runs_joined\": []\n},\n {\n  \"_id\": \"58b9bc1cf123d525d4bde98e\",\n  \"user\": {\n    \"_id\": \"58b9bc1bf123d525d4bde98d\",\n    \"last_modified\": \"2017-03-03T18:55:24.027Z\",\n    \"date_created\": \"2017-03-03T18:55:23.992Z\",\n    \"username\": \"maria283@yahoo.com\",\n    \"role\": \"consumer\",\n    \"profile\": \"58b9bc1cf123d525d4bde98e\",\n    \"status\": \"active\",\n    \"realm\": \"user\"\n  },\n  \"first_name\": \"maria\",\n  \"last_name\": \"keru\",\n  \"email\": \"maria283@yahoo.com\",\n  \"run_invitation\":[],\n  \"runs_created\": [],\n  \"runs_joined\": []\n}\n]",
           "type": "json"
         }
       ]

@@ -4,9 +4,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var inviteSchema = new Schema({
-    message :{ type: String},
     run     :{ type: Schema.Types.ObjectId, ref:'Run'},
-    invitees:[{ type: Schema.Types.ObjectId, ref:'User'}]
+    invitees:[{ type: Schema.Types.ObjectId, ref:'Profile'}]
 
 }, { versionKey: false });
 

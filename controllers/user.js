@@ -4,11 +4,23 @@ var crypto       = require('crypto');
 var debug        = require('debug')('rucha-api');
 var moment       = require('moment');
 var request      = require('request');
+var nodemailer = require('nodemailer'); 
+var sgTransport = require('nodemailer-sendgrid-transport'); 
 
 var config       = require('../config');
 var userDal      = require('../dal/user');
 var profileDal   = require('../dal/profile');
 var runDal       = require('../dal/run');
+var TokenDal     = require('../dal/token');
+
+//Sendgrid Configuration Settings	
+var options = {
+	auth: {
+		api_user: 'winnie', // Sendgrid username
+		api_key: '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' // Sendgrid password
+	}
+}
+var client = nodemailer.createTransport(sgTransport(options));
 
 /**
  * create a user
@@ -172,70 +184,6 @@ exports.getUsers = (req, res, next) => {
 };
 
 /**
- * Verify Passwword
- * 
- * @desc Get one user from the database and verify their credentials
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
- */
-exports.verifyUser = function verifyUser(req, res, next){
-    debug('verify user');
-
-    var body = req.body;
-    var workflow = new EventEmitter();
-
-    workflow.on('validateUser', function validateUser(){
-        //check username and password
-        req.checkBody('username','username is empty').notEmpty();
-        req.checkBody('password', 'password mismatch').notEmpty();
-
-        var errs = req.validationErrors();
-        if(errs){
-            res.status(400).json(errs);
-            return;
-        }else{
-            workflow.emit('checkUsername');
-        };
-    })
-    workflow.on('checkUsername', function checkUsername(){
-        userDal.get({ username: req.body.username }, function done(err, user) {
-            console.log(req.body.username);
-            if(err) {
-                return next(err);
-            }
-            if(!user._id){
-                res.status(404);
-                res.json({
-                    message: 'User Not Found!'
-                });
-                return;
-            }
-            workflow.emit('checkPassword', user);
-        });
-    });
-    workflow.on('checkPassword', function checkPassword(user) {
-    // Check Password
-    user.checkPassword(req.body.password, function done(err, isOk) {
-      if(err) {
-        return next(err);
-      }
-
-      if(!isOk) {
-        res.status(403);
-        res.json({
-          message: 'Wrong Credentials!'
-        });
-        return;
-      }
-      res.send('everything ok!');
-    });
-  });
-
-    workflow.emit('validateUser');
-}
-
-/**
  * Update Password
  * 
  * @desc Get one user from the database and update their password
@@ -244,13 +192,11 @@ exports.verifyUser = function verifyUser(req, res, next){
  * @param {function} next middleware dispatcher
  */
 exports.updatePassword = function updatePassword(req, res, next){
-    debug('update password');
-
     var body = req.body;
     var workflow = new EventEmitter();
 
-    workflow.on('newPass', function newPass(){
-
+    workflow.on('updatePass', function updatePass(){
+        //Enter the oldPassword and newPassword
         req.checkBody('password', 'password is empty').notEmpty();
         req.checkBody('newPassword', 'newPassword is empty').notEmpty();
         req.checkBody('confirmPassword', 'password mismatch').equals(req.body.newPassword);
@@ -263,6 +209,7 @@ exports.updatePassword = function updatePassword(req, res, next){
         workflow.emit('verifyUser');
     });
 
+    //Verify if the user exists
     workflow.on('verifyUser', function verifyUser(){
         userDal.get({_id: req.params._id }, function done(err, user) {
             if(err) { return next(err);}
@@ -275,6 +222,8 @@ exports.updatePassword = function updatePassword(req, res, next){
             }
             workflow.emit('verifyPass', user);
         });
+
+        //verify the users password
         workflow.on('verifyPass', function verifyPass(user){
             user.checkPassword(req.body.password, function done(err, isOk) {
                 if(err) { return next(err);}
@@ -285,22 +234,22 @@ exports.updatePassword = function updatePassword(req, res, next){
                     });
                     return;
                 }
-                workflow.emit('hashPass');
+                workflow.emit('hashPass', user);
             });
         });
+
+        //save the newPassword
         workflow.on('hashPass', function hashPass(user){
-            debug('hashing pass....');
-            var hash = user.hash(body.newPassword);
-            var updated = {password: hash};
-            var query = {_id:user._id};
-            userDal.update(query, updated, function updatecb(err, user){
+            user.password = req.body.newPassword;
+            user.save(function (err){
                 if(err){ return next(err);}
+
                 res.json(user);
             });
         });
     });
     
-    workflow.emit('newPass');
+    workflow.emit('updatePass');
 };
 
 
@@ -316,3 +265,78 @@ exports.updatePassword = function updatePassword(req, res, next){
 //         res.json(profile.city);
 //      });
 // };
+
+/**
+ * Forgot password
+ */
+exports.forgotPassword = function forgotPassword(req, res, next){
+    debug('damn!forgot password');
+
+    var body = req.body;
+    var workflow = new EventEmitter();
+
+    workflow.on('validateEmail', function validateEmail(){
+        debug('enter email');
+
+        req.checkBody('email',' email is empty').notEmpty();
+
+        var errs = req.validationErrors();
+        if(errs){
+            res.status(404);
+            res.json(errs);
+        };
+        workflow.emit('sendEmail');
+    });
+        workflow.on('sendEmail', function sendEmail(){
+            debug('getting there...');
+            userDal.get({_id:req.params._id}, function getcb(err, user){
+                if(err){ return next(err);}
+
+                if(body.email !== user.username){
+                    res.status(404);
+                    res.json({ 
+                        message:'Email mismatch'
+                    });
+                    return;
+                }else{
+                    TokenDal.get({ user: user._id}, function done(err, token){
+                        if(err){ return next(err);}
+
+                crypto.randomBytes(config.TOKEN_LENGTH, function tokenGenerator(err, buf){
+                    if(err){ return next(err);}
+
+                    var tokenValue = buf.toString('base64');
+                    userDal.update({_id: user._id},{ $set:{resetToken:tokenValue, revoked:false} }, function updateToken(err, token){
+                        if(err){ return next(err); }
+                        
+                        res.json(user, tokenValue);
+                    });           
+                });
+            });
+            user.save(function(err){
+                if(err) { 
+                     return next(err);
+                    }else{
+                        // Create e-mail object to send to user
+                        var email = {
+						from: 'Rucha, rucha@localhost.com',
+						to: user.username,
+						subject: 'Rucha password reset link',
+						text: 'Hello ' + user.username + ',Please click on the following link to reset your password: http://localhost:8800/resetPassword/' + user.resetToken,
+						html: 'Hello<strong> ' + user.username + '</strong>,<br><br> Please click on the link below to reset your password:<br><br><a href="http://localhost:8800/resetPassword' + user.resetToken + '">http://localhost:8800/resetPassword/</a>'
+					};
+					// Function to send e-mail to the user
+					client.sendMail(email, function(err, info) {
+						if (err) console.log(err); // If error with sending e-mail, log to console/terminal
+					});
+                    res.json({ message:'Please check your email for a reset password link'});
+                        }
+                    })
+                }
+                
+                res.send('check your email');
+            });
+        });
+        workflow.emit('validateEmail');
+    };
+    

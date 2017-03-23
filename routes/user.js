@@ -18,7 +18,7 @@ var router = express.Router();
  * @apiParam {String} last_name Last Name
  * @apiParam {String} user_type User Type - consumer
  *
- * @apiParamExample Request Example:
+ * @apiParamExample {json} Request-Example:
  *  {
  *    "first_name": "olivia",
  *    "last_name": "Pope",
@@ -50,7 +50,7 @@ router.post('/signup', user.createUser);
 /**
  * @api {post} /users/login Login User
  * @apiName login
- * @apiGroup Auth
+ * @apiGroup Users
  *
  * @apiParam {String} username Email Address
  * @apiParam {String} password User Password
@@ -75,7 +75,7 @@ router.post('/login', auth.login);
 /**
  * @api {post} /users/logout Logout User
  * @apiName logout
- * @apiGroup Auth
+ * @apiGroup Users
  *
  * @apiSuccessExample {json} Success-Response:
  *  {
@@ -187,6 +187,7 @@ router.get('/all',authorize(['admin']), user.getUsers);
  */
 router.get('/:_id', user.fetchOne);
 
+
 /**
  * @api {put} /users/:_id Update User
  * @apiName updateUser
@@ -231,19 +232,15 @@ router.get('/:_id', user.fetchOne);
  */
 router.put('/:_id',authorize(['admin']), user.updateUser);
 
-/**
- * 
- */
 // router.get('/:_id/coordinates', user.getCoordinates);
-router.post('/:_id/verify', user.verifyUser);
-router.post('/:_id/changePass', user.updatePassword);
+router.post('/:_id/forgot', user.forgotPassword);
+
+router.post('/:_id/updatePass', user.updatePassword);
 
 // DELETE /users/:userId
 router.delete('/:_id', user.delete);
 
 router.post('/forgot', auth.forgotPassword);
-
-
 
 // Export Router
 module.exports = router;

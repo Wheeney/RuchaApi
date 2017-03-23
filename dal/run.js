@@ -5,7 +5,7 @@
 var debug      = require('debug')('rucha-api');
 var moment     = require('moment');
 var Run        = require('../models/run');
-var population = [{ path: 'user' }];
+var population = [{ path: 'profile' },{path:'user'}];
 
 
 /**

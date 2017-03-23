@@ -5,10 +5,13 @@
 var EventEmitter = require('events').EventEmitter;
 var moment       = require('moment');
 var debug        = require('debug')('rucha-api');
+
 var userDal      = require('../dal/user');
 var runDal       = require('../dal/run');
 var profileDal   = require('../dal/profile');
 var inviteDal    = require('../dal/invite');
+
+ var workflow = new EventEmitter();
 
 /**
  * Create a run
@@ -22,19 +25,17 @@ exports.createRun = (req, res, next)=>{
     debug('creating a run');
 
     var body = req.body;
-    var workflow = new EventEmitter();
 
     //validate the run
     workflow.on('validateRun', function validateRun(){
         debug('validating run');
 
-        req.checkBody('name', 'Name is empty').notEmpty();
+        req.checkBody('name', 'Name is empty').notEmpty().withMessage('name is invalid');
         req.checkBody('location', 'Location is empty').notEmpty();
         req.checkBody('scheduled_date', 'scheduled_date invalid').isDate();
         req.checkBody('visibility', 'Please select public or private').notEmpty().isIn(['public','private']);
 
         var validationErrors = req.validationErrors();
-
         if(validationErrors){
             res.status(400);
             res.json(validationErrors);
@@ -43,44 +44,35 @@ exports.createRun = (req, res, next)=>{
         };
     });
     workflow.on('createRun', function createRun(){
-        //create run data
-        runDal.create({
-            name:body.name,
-            location:body.location,
-            scheduled_date:body.scheduled_date,
-            visibility:body.visibility,
-            date_created:Date.now(),
-            last_modified:Date.now()
-
-        }, function cb(err, run){
-            if(err){
-                return next(err);
-            };
-            workflow.emit('respond', run);                
+        profileDal.get({_id:req._user.profile}, function getcb(err, profile){
+            if(err){ return next(err);}
             
+            runDal.create({
+                name          :body.name,
+                location      :body.location,
+                scheduled_date:body.scheduled_date,
+                visibility    :body.visibility,
+                creator       :profile.first_name,
+                date_created  :Date.now(),
+                last_modified :Date.now()
+
+            }, function cb(err, run){
+                if(err){ return next(err);};
+
+                profileDal.update({_id:req._user.profile},{ $addToSet:{runs_created:run._id} }, function updatecb(err, profile){
+                    if(err){ return next(err);}
+                    
+                    workflow.emit('respond', run);
+                });                       
+            });
         });
     });
-
-//     workflow.on('saveRun', function saveRun(run){
-//         debug('save newly created game:', run._id);
-
-//         profileDal.get({_id:req.params._id}, function(err, profile){
-//             if(err){ return next(err);}
-
-//             profileDal.update({ _id:profile._id}, { runs_created:run._id}, function updatecb(err, profile){
-//             if(err){ return next(err);}
-
-//             workflow.emit('respond', run);
-//         });
-//     });
-// });
-
     workflow.on('respond', function respond(run){
         res.status(201).json(run);
     });
-
     workflow.emit('validateRun');
 };
+
 /**
  * Get one run
  * 
@@ -96,7 +88,6 @@ exports.getRun =(req, res, next)=>{
 
     runDal.get(query, function getcb(err, run){
         if (err) { return next(err);}
-
         res.json(run);
     });
 };
@@ -116,7 +107,6 @@ exports.removeRun =(req, res,next)=>{
 
     runDal.delete(query, function deletecb(err, run){
         if(err) { return next(err);}
-
         res.json(run);
     });
 };
@@ -137,7 +127,6 @@ exports.updateRun =(req, res, next)=>{
 
     runDal.update(query, body, function updatecb(err, run){
         if (err) { return next(err);}
-
         res.json(run);
     });
 };
@@ -156,9 +145,7 @@ exports.getRuns = (req, res, next)=>{
     var query = {};
     
     runDal.getCollection(query, function getRunCollections(err, runs){
-        if(err){
-            return next(err);
-        }
+        if(err){ return next(err);}
         res.json(runs);
     });
 };
@@ -177,11 +164,9 @@ exports.getPublicRuns =(req, res, next)=>{
     var query = {visibility:'public'};
     
     runDal.getCollection(query, function getRunCollections(err, runs){
-        if(err){
-            return next(err);
-        }
+        if(err){ return next(err);}
         res.json(runs);
-    })
+    });
 };
 
 /**
@@ -199,7 +184,6 @@ exports.getOnePublicRun =(req, res, next)=>{
 
     runDal.get(query, function getcb(err, run){
         if (err) { return next(err);}
-
         res.json(run);
     });
 };
@@ -218,11 +202,9 @@ exports.getParticipants = function getParticipants(req, res, next){
     var query = {_id:req.params._id};
     
     runDal.getParticipants(query, function getRunParticipants(err, runs){
-        if(err){
-            return next(err);
-        }
+        if(err){ return next(err); }
         res.json(runs);
-    })
+    });
 };
 
 
@@ -238,48 +220,22 @@ exports.joinRun = function joinRun(req, res, next){
     debug('joining run:', req.params._id);
 
     var query = {_id:req.params._id};
-    var workflow = new EventEmitter();
 
-    workflow.on('validateFollower', function validateFollower(){
-        debug('get me the follower profile id');
-        
-        req.checkBody('participants','follower id is empty').notEmpty();
+    runDal.get(query, function getcb(err, run){
+        if (err){ return next(err);}
 
-        var errs = req.validationErrors();
-        if(errs){
-            res.status(404);
-            res.json(errs);
-        }else{
-            workflow.emit('joinRun');
-
-        }     
-    });
-    workflow.on('joinRun', function joinRun(){
-
-        var body = req.body;
-        runDal.create({participants:req.body.participants}, function done(err, run){
+        profileDal.update({_id:req._user.profile}, { $addToSet:{ runs_joined:query}}, function updatecb(err, profile){
             if(err){ return next(err);}
 
-            runDal.get(query, function getcb(err, run){
-                if (err) { return next(err);}
+            runDal.update(query, { $addToSet:{ participants:req._user.profile}}, function updatecb2(err, run){
+                if (err){ return next(err);}
 
-            profileDal.update({_id:body.participants}, {$addToSet:{runs_joined:run._id}}, function updatecb1(err, profile){
-                if(err){ next(err);}
-
-                runDal.update({_id:run._id},{$addToSet:{participants:body.participants}}, function updatecb2(err, run){
-                    if(err){ return next(err);}
-
-                    res.json(run);
-                });
+                res.json(run);
             });
+        });
     });
-})
-    })
-    workflow.emit('validateFollower');
-     
-
 };
-
+ 
 /**
  * Unfollow a run
  * 
@@ -291,49 +247,23 @@ exports.joinRun = function joinRun(req, res, next){
 exports.unfollowRun = function unfollowRun(req, res, next){
     debug('controller:unfollowing run:', req.params._id);
 
-    var workflow = new EventEmitter();
+        var query = {_id:req.params._id};
 
-    workflow.on('validateFollower', function validateFollower(){
-        debug('validating user:', req.params._id);
-
-        req.checkBody('participants','id is empty').notEmpty();
-
-        var errs = req.validationErrors();
-        if(errs){
-            res.status(404);
-            res.json(errs);
-        }else{
-            workflow.emit('unfollowRun');
-        }
-    });
-
-    workflow.on('unfollowRun', function unfollowRun(){
-
-        var query = {_id: req.params._id};
-        var body = req.body;
-
-    runDal.create({participants:req.body.participants}, function done(err, run){
-            if(err){ return next(err);}        
-
-    runDal.get(query, function unfollowcb(err, run){
-        if(err){ return next(err);}
-
-        profileDal.update({_id:body.participants}, { $pull:{runs_joined:run._id}}, function updatecb3(err, profile){
+        runDal.get(query, function getcb(err, run){
             if(err){ return next(err);}
 
-            runDal.update({_id:run._id}, {$pull:{participants:body.participants}}, function updatecb4(err, run){
+            profileDal.update({_id:req._user.profile}, { $pull:{ runs_joined:run._id}}, function updatecb(err,profile){
                 if(err){ return next(err);}
+
+                runDal.update(query, { $pull:{ participants:req._user.profile}}, function updatecb2(err, run){
+                if (err){ return next(err);}
 
                 res.json(run);
             });
         });
     });
-
-    })
-    });
-
-    workflow.emit('validateFollower');
 };
+
 /**
  * Get all participants of a run
  * 
@@ -351,6 +281,7 @@ exports.getParticipants = (req, res, next)=>{
         res.json(run.participants);   
     });
 }
+
 
 /**
  * Search by location
@@ -380,7 +311,7 @@ exports.sendInvite = function sendInvite(req, res, next){
     debug('sending invite');
 
     var body = req.body;
-    var workflow = new EventEmitter();
+    // var workflow = new EventEmitter();
 
     workflow.on('validateInvitation', function validateInvitation(){
         debug('still sending yall');
@@ -415,10 +346,8 @@ exports.sendInvite = function sendInvite(req, res, next){
                     res.json(profile);
                 });
             });
-    });
-})
+        });
     })
-    workflow.emit('validateInvitation');
-     
-
+});
+workflow.emit('validateInvitation');
 };

@@ -105,7 +105,6 @@ router.get('/all', profile.getProfiles);
  */
 router.get('/:_id', profile.getProfile);
 
-
 /**
  * @api {put} /profiles/:_id Update profile
  * @apiName updateProfile
@@ -157,6 +156,10 @@ router.get('/:_id', profile.getProfile);
 router.put('/:_id', profile.updateProfile);
 
 router.get('/:_id/coordinates', profile.getCoordinates);
+
+router.get('/:_id/created', profile.getRunsCreated);
+
+router.get('/:_id/created/:_id', profile.getRunsCreated);
 
 
 router.get('/:_id/joined', profile.getRunsJoined);

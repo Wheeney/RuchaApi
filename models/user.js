@@ -4,7 +4,7 @@ var bcrypt   = require('bcrypt');
 var moment   = require('moment');
 var config   = require('../config');
 var debug    = require('debug')('rucha-api');
-
+var paginator = require('mongoose-paginate');
 var Schema  = mongoose.Schema;
 
 // Define User Attributes
@@ -18,10 +18,13 @@ var UserSchema = new Schema({
   status         : { type: String, default: 'active' },
   profile        : { type: Schema.Types.ObjectId, ref: 'Profile' },
   last_login     : { type: Date },
+  resetToken     : { type: String, required:false},
   date_created   : { type: Date },
   last_modified  : { type: Date }
   
 }, { versionKey: false });
+
+UserSchema.plugin(paginator);
 
 // UserSchema.statics.attributes = {
 //   password:0,
@@ -34,6 +37,8 @@ UserSchema.pre('save', function preSaveHook(next){
   debug('presave user');
 
   let model = this;
+
+  if (!model.isModified('password')) return next();
 
   //Generate a salt factor
 

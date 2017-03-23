@@ -114,6 +114,18 @@ exports.getCollection = (query, cb)=>{
     .then(users=>{ return cb(null, users);
     })
     .catch(err=>{ return cb(err);
-    });
-};
+        });
+    };
 
+/**
+ * Get a collection of users by pagination
+ */
+exports.getUserCollection = function getUserCollection(query, queryOpts, cb){
+    debug('Getting users by pagination');
+
+    var Promise = User.paginate(query, queryOpts)
+    .then (result=>{ return cb(result);
+    })
+    .catch(err=>{ return cb(err);
+        });
+    };

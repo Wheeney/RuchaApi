@@ -1,5 +1,5 @@
 {
-  "name": "rucha-api",
+  "name": "Rucha-api",
   "version": "1.0.0",
   "description": "Rucha api",
   "main": "app.js",
@@ -34,11 +34,16 @@
     "mongoose": "^4.8.1",
     "mongoose-paginator": "^0.2.5",
     "multer": "^1.3.0",
+    "nodemailer": "^3.1.8",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^1.11.0",
     "request": "^2.79.0"
   },
   "devDependencies": {
     "apidoc": "^0.17.5",
     "supertest": "^3.0.0"
+  },
+  "apidoc": {
+    "url": "146.148.110.255"
   }
 }
