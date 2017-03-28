@@ -306,6 +306,10 @@ router.delete('/:_id', run.removeRun);
  *   }
  */
 router.put('/:_id', run.updateRun);
+router.get('/:_id/start', run.geocode);
+
+router.get('/:_id/distance', run.getDistanceCovered);
+router.post('/:_id/cal', run.calculator);
 
 
 // Export Router

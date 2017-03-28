@@ -1,6 +1,6 @@
 //Load module dependencies
 var EventEmitter = require('events').EventEmitter;
-var debug        = require('debug')('rucha-api');
+var debug        = require('debug')('api:controller-invite');
 var moment       = require('moment');
 
 var config       = require('../config');
@@ -44,10 +44,10 @@ exports.createInvite = function createInvite(req, res, next){
             }, function createcb(err, invite){
             if(err) { return next(err);}
 
-            profileDal.update({_id:req.body.invitees}, {run_invitation:invite._id}, function updatecb(err, profile){
+            profileDal.update({_id:req.body.invitees}, { $addToSet:{runs_invited:invite._id}}, function updatecb(err, profile){
                 if(err){ return next(err);}
 
-                runDal.update({_id:req.body.run}, { pendingInvites:req.body.invitees}, function updatecb2(err, run){
+                runDal.update({_id:req.body.run}, { $addToSet:{pendingInvites:req.body.invitees}}, function updatecb2(err, run){
                     if(err){ return next(err);}
 
                     workflow.emit('respond', invite);

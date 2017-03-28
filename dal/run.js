@@ -2,7 +2,7 @@
 /**
  * Load module dependencies
  */
-var debug      = require('debug')('rucha-api');
+var debug      = require('debug')('api:dal-run');
 var moment     = require('moment');
 var Run        = require('../models/run');
 var population = [{ path: 'profile' },{path:'user'}];

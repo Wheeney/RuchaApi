@@ -5,7 +5,6 @@ var userRouter    = require('./user');
 var profileRouter = require('./profile');
 var runRouter     = require('./run');
 var forecastRouter= require('./forecast');
-var calculatorRouter = require('./calculator');
 var inviteRouter  = require('./invite');
 
 // Export Router Initializater
@@ -22,9 +21,6 @@ module.exports = function initRouter(app) {
 
   //Forecast Endpoint
   app.use('/weather', forecastRouter);
-
-  //Calculator Endpoint
-  app.use('/calculator', calculatorRouter);
 
   //Invite Endpoint
   app.use('/invites', inviteRouter);

@@ -1,10 +1,8 @@
 //Load module dependencies
 var EventEmitter = require('events').EventEmitter;
 var crypto = require('crypto');
-var mailgun = require('../config/mailgun');
 
-
-var debug = require('debug')('rucha-api');
+var debug = require('debug')('api:controller-auth');
 var moment = require('moment');
 
 var config   = require('../config');
@@ -120,8 +118,8 @@ exports.login = function login(req, res, next){
                 res.json({
                     token:token,
                     user:user
-                })
-            })
+                });
+            });
         });
 
   

@@ -1,6 +1,6 @@
 // Load Module Dependencies
 
-var debug      = require('debug')('rucha-api');
+var debug      = require('debug')('api:controller-profile');
 var request    = require('request');
 
 var profileDal = require('../dal/profile');

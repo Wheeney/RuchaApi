@@ -2,7 +2,7 @@
  * Load module dependencies
  */
 var moment  = require('moment');
-var debug   = require('debug')('rucha-api');
+var debug   = require('debug')('api:controller-forecast');
 var request = require('request');
 
 var runDal  = require('../dal/run');

@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start": "DEBUG=rucha* nodemon app.js",
+    "start": "DEBUG=api* nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-docs": "./node_modules/.bin/apidoc -i ./routes -o ./docs"
   },
@@ -37,7 +37,8 @@
     "nodemailer": "^3.1.8",
     "nodemailer-sendgrid-transport": "^0.2.0",
     "nodemon": "^1.11.0",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "sendgrid": "^4.8.4"
   },
   "devDependencies": {
     "apidoc": "^0.17.5",

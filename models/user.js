@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt');
 var moment   = require('moment');
 var config   = require('../config');
-var debug    = require('debug')('rucha-api');
+var debug    = require('debug')('api:model-user');
 var paginator = require('mongoose-paginate');
 var Schema  = mongoose.Schema;
 
@@ -24,13 +24,22 @@ var UserSchema = new Schema({
   
 }, { versionKey: false });
 
-UserSchema.plugin(paginator);
+/**
+ * Model Attributes to expose
+ */
+UserSchema.statics.attributes = {
+  username:1,
+  role:1,
+  realm:1,
+  status:1,
+  profile:1,
+  last_login:1,
+  date_created:1,
+  last_modified:1
+};
 
-// UserSchema.statics.attributes = {
-//   password:0,
-//   confirmPassword:0,
-//   newPassword:0
-// };
+//Middleware to support pagination
+UserSchema.plugin(paginator);
 
 //Add a pre save hook
 UserSchema.pre('save', function preSaveHook(next){

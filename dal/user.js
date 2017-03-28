@@ -1,7 +1,7 @@
 /**
  * Load module dependencies
  */
-var debug  = require('debug')('rucha-api');
+var debug  = require('debug')('api:dal-user');
 var moment = require('moment');
 var User   = require('../models/user');
 var population = [{path:'profile'}];
@@ -21,7 +21,7 @@ exports.create = (userData, cb)=>{
 
     //verify that the user does not exist(using their email)
     User.findOne(query, function userExists(err, existingUser){
-        if(err) { return next(err); };
+        if(err) { return cb(err); };
         
         if(existingUser){
             return cb(new Error('User already exists!'));
@@ -114,8 +114,8 @@ exports.getCollection = (query, cb)=>{
     .then(users=>{ return cb(null, users);
     })
     .catch(err=>{ return cb(err);
-        });
-    };
+    });
+}; 
 
 /**
  * Get a collection of users by pagination

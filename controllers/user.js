@@ -1,11 +1,13 @@
 //Load module dependencies
 var EventEmitter = require('events').EventEmitter;
 var crypto       = require('crypto');
-var debug        = require('debug')('rucha-api');
+var debug        = require('debug')('api:controller-user');
 var moment       = require('moment');
 var request      = require('request');
-var nodemailer = require('nodemailer'); 
-var sgTransport = require('nodemailer-sendgrid-transport'); 
+var sendgrid = require('sendgrid')('kerubo111', 'winnie111');
+var sg = require('sendgrid')('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');
+
+
 
 var config       = require('../config');
 var userDal      = require('../dal/user');
@@ -14,13 +16,6 @@ var runDal       = require('../dal/run');
 var TokenDal     = require('../dal/token');
 
 //Sendgrid Configuration Settings	
-var options = {
-	auth: {
-		api_user: 'winnie', // Sendgrid username
-		api_key: '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' // Sendgrid password
-	}
-}
-var client = nodemailer.createTransport(sgTransport(options));
 
 /**
  * create a user
@@ -179,9 +174,10 @@ exports.getUsers = (req, res, next) => {
     userDal.getCollection(query, function getUserCollections(err, users) {
         if (err) { return next(err); }
 
-        res.json(users);
+        res.json(users.length);
     });
 };
+
 
 /**
  * Update Password
@@ -285,58 +281,112 @@ exports.forgotPassword = function forgotPassword(req, res, next){
             res.status(404);
             res.json(errs);
         };
-        workflow.emit('sendEmail');
+        workflow.emit('sendMail');
     });
-        workflow.on('sendEmail', function sendEmail(){
-            debug('getting there...');
-            userDal.get({_id:req.params._id}, function getcb(err, user){
+
+    workflow.on('sendMail', function sendMail(){
+        debug('sending mail...');
+
+        userDal.get({ _id:req.params._id}, function getcb(err, user){
+            if(err){ return next(err);}
+
+            if(body.email !== req._user.username){
+                res.status(404);
+                res.json({
+                    message:'Email does not match'
+                });
+                return;
+            }else{
+                TokenDal.get({user:user._id}, function done(err, token){
+                    if(err) { return next(err);}
+
+                    crypto.randomBytes(config.TOKEN_LENGTH, function tokenGenerator(err, buf){
+                        if(err) {return next(err);}
+
+                        var tokenValue = buf.toString('base64');
+
+                        TokenDal.update({_id: token._id},{ $set:{resetToken:tokenValue, revoked:false} }, function updateToken(err, token){
+                             if(err){ return next(err); }
+
+                             workflow.emit('netSend', user, tokenValue);
+                         });
+                    });
+                });
+            };
+        });
+    });
+    workflow.on('netSend', function netSend(user, tokenValue){
+        var resetToken = tokenValue;
+
+        var helper = require('sendgrid').mail;
+        var from_email = new helper.Email('rucha709@gmail.com');
+        var to_email = new helper.Email(body.email);
+        var subject = 'Reset Password!';
+        var content = new helper.Content('text/plain', 'Hello '+body.email+' You recently requested a reset password link.Please click on the reset link below to complete the process:http://localhost:8800/users/reset/'+resetToken);
+        var mail = new helper.Mail(from_email, subject, to_email, content);
+
+        var request = sg.emptyRequest({
+            method: 'POST',
+            path: '/v3/mail/send',
+            body: mail.toJSON(),
+        });
+        sg.API(request, function(error, response) {
+            res.status(response.statusCode);
+            res.json({
+                message:'Reset link has been sent to: '+body.email+' Please check your email'
+            });
+            return;
+        });
+        
+    });
+    workflow.emit('validateEmail');
+};
+
+/**
+ * Reset Password
+ */
+exports.resetPassword = function resetPassword(req, res, next){
+    debug('Reset password now...');
+
+    var body = req.body;
+    var workflow = new EventEmitter();
+
+    workflow.on('newPass', function newPass(){
+        req.checkBody('newPassword', 'newPassword is empty').notEmpty();
+        req.checkBody('confirmPassword', 'password mismatch').equals(req.body.newPassword);
+
+        var errs = req.validationErrors();
+        if(errs){
+            res.status(404);
+            res.json(errs);
+        };
+        workflow.emit('reset');
+    });
+    workflow.on('reset', function reset(){
+        userDal.get({_id: req.params._id }, function done(err, user) {
+            if(err) { return next(err);}
+            if(!user._id){
+                res.status(404);
+                res.json({
+                    message: 'User Not Found!'
+                });
+                return;
+            }
+            workflow.emit('hashPass', user);
+        });
+
+        //save the newPassword
+        workflow.on('hashPass', function hashPass(user){
+            user.password = req.body.newPassword;
+            user.save(function (err){
                 if(err){ return next(err);}
 
-                if(body.email !== user.username){
-                    res.status(404);
-                    res.json({ 
-                        message:'Email mismatch'
-                    });
-                    return;
-                }else{
-                    TokenDal.get({ user: user._id}, function done(err, token){
-                        if(err){ return next(err);}
-
-                crypto.randomBytes(config.TOKEN_LENGTH, function tokenGenerator(err, buf){
-                    if(err){ return next(err);}
-
-                    var tokenValue = buf.toString('base64');
-                    userDal.update({_id: user._id},{ $set:{resetToken:tokenValue, revoked:false} }, function updateToken(err, token){
-                        if(err){ return next(err); }
-                        
-                        res.json(user, tokenValue);
-                    });           
+                res.json({
+                    message:'Your password has been successfully reset.'
                 });
             });
-            user.save(function(err){
-                if(err) { 
-                     return next(err);
-                    }else{
-                        // Create e-mail object to send to user
-                        var email = {
-						from: 'Rucha, rucha@localhost.com',
-						to: user.username,
-						subject: 'Rucha password reset link',
-						text: 'Hello ' + user.username + ',Please click on the following link to reset your password: http://localhost:8800/resetPassword/' + user.resetToken,
-						html: 'Hello<strong> ' + user.username + '</strong>,<br><br> Please click on the link below to reset your password:<br><br><a href="http://localhost:8800/resetPassword' + user.resetToken + '">http://localhost:8800/resetPassword/</a>'
-					};
-					// Function to send e-mail to the user
-					client.sendMail(email, function(err, info) {
-						if (err) console.log(err); // If error with sending e-mail, log to console/terminal
-					});
-                    res.json({ message:'Please check your email for a reset password link'});
-                        }
-                    })
-                }
-                
-                res.send('check your email');
-            });
         });
-        workflow.emit('validateEmail');
-    };
+});
+workflow.emit('newPass');
+};
     

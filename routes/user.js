@@ -235,10 +235,9 @@ router.put('/:_id',authorize(['admin']), user.updateUser);
 // router.get('/:_id/coordinates', user.getCoordinates);
 router.post('/:_id/forgot', user.forgotPassword);
 
-router.post('/:_id/updatePass', user.updatePassword);
+router.post('/:_id/reset', user.resetPassword);
 
-// DELETE /users/:userId
-router.delete('/:_id', user.delete);
+router.post('/:_id/updatePass', user.updatePassword);
 
 router.post('/forgot', auth.forgotPassword);
 

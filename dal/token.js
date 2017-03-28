@@ -2,7 +2,7 @@
 /**
  * Load module dependencies
  */
-var debug      = require('debug')('rucha-api');
+var debug      = require('debug')('api:dal-token');
 var moment     = require('moment');
 var Token      = require('../models/token');
 var population = [{path:'user'}];

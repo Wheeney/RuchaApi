@@ -1,7 +1,7 @@
 /**
  * Load module dependencies
  */
-var debug      = require('debug')('rucha-api');
+var debug      = require('debug')('api:dal-invite');
 var moment     = require('moment');
 
 var Invite     = require('../models/invite');

@@ -1,17 +1,18 @@
 // Load Module Dependencies
 var express     = require('express');
 var bodyParser  = require('body-parser');
-var debug       = require('debug')('rucha-api');
+var debug       = require('debug')('api:app');
 var mongoose    = require('mongoose');
 var validator   = require('express-validator');
 var morgan      = require('morgan');
 
 var config      = require('./config');
 var router      = require('./routes');
+
 var authenticate = require('./lib/authenticate');
 
 // Connect to Mongodb
-mongoose.connect(config.MONGODB_URL);
+mongoose.connect(config.MONGODB.URL, config.MONGODB.OPTS);
 // listen to connection event
 mongoose.connection.on('connected', function mongodbConnectionListener() {
   debug('Mongodb Connected successfully');
@@ -21,7 +22,7 @@ mongoose.connection.on('error', function mongodbErrorListener() {
   debug('Connection to Mongodb Failed!!');
 
   // Try and Reconnect
-  mongoose.connect(config.MONGODB_URL);
+  mongoose.connect(config.MONGODB.URL);
 
 });
 
@@ -63,8 +64,8 @@ app.use(function(req, res, next) {
 });
 
 // Listen to HTTP Port
-app.listen(config.HTTP_PORT, function connectionListener() {
-  debug('API Server running on port %s', config.HTTP_PORT);
+app.listen(config.PORT, function connectionListener() {
+  debug('API Server running on port %s', config.PORT);
 });
 
 module.exports = app;
