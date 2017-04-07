@@ -4,7 +4,8 @@
 var env = process.env;
 
 var PORT = env.PORT || 9900;
-var MONGODB_URL = env.MONGODB_URL || 'mongodb://127.0.0.1:27017/xam';
+// var MONGODB_URL = env.MONGODB_URL || 'mongodb://127.0.0.1:27017/xam';
+var MONGODB_URL = env.MONGODB_URL || 'mongodb://winnie:winnie@ds141410.mlab.com:41410/super';
 var HOST = 'localhost';
 var SGUSER = env.SGUSER|| 'kerubo111';
 var SGPASSWORD = env.SGPASSWORD|| 'winnie111';

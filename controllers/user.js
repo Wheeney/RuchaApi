@@ -39,7 +39,7 @@ exports.createUser = (req, res, next) => {
         req.checkBody('password', 'Invalid password!').notEmpty().withMessage('Password is empty').isLength(5);
         req.checkBody('user_type', 'User Type is Invalid!')
         .notEmpty().withMessage('User Type is Empty')
-        .isIn(['consumer', 'admin']).withMessage('User Type should either be consumer or admin');
+        .isIn(['consumer', 'manager']).withMessage('User Type should either be consumer or manager');
 
         var errs = req.validationErrors();
         if (errs) {
