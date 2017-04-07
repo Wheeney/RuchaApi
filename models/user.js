@@ -1,11 +1,14 @@
-// Load Module Dependencies
+/**
+ * Load Module Dependencies
+ */
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt');
 var moment   = require('moment');
 var config   = require('../config');
 var debug    = require('debug')('api:model-user');
-var paginator = require('mongoose-paginate');
-var Schema  = mongoose.Schema;
+var paginator= require('mongoose-paginate');
+
+var Schema   = mongoose.Schema;
 
 // Define User Attributes
 var UserSchema = new Schema({
@@ -27,8 +30,9 @@ var UserSchema = new Schema({
 /**
  * Model Attributes to expose
  */
-UserSchema.statics.attributes = {
+UserSchema.statics.whitelist = {
   username:1,
+  password:1,
   role:1,
   realm:1,
   status:1,
@@ -44,13 +48,11 @@ UserSchema.plugin(paginator);
 //Add a pre save hook
 UserSchema.pre('save', function preSaveHook(next){
   debug('presave user');
-
-  let model = this;
+  var model = this;
 
   if (!model.isModified('password')) return next();
 
   //Generate a salt factor
-
   bcrypt.genSalt(config.SALT_LENGTH, function genSalt(err, salt){
     if (err){ return next(err);}
      
@@ -63,6 +65,7 @@ UserSchema.pre('save', function preSaveHook(next){
       model.password = hash;
       model.date_created = now;
       model.last_modified = now;
+      
       next();      
     });
   });

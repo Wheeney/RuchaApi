@@ -1,9 +1,11 @@
-// Load Module Dependencies
+/**
+ * Load Module Dependencies
+ */
 var mongoose  = require('mongoose');
 var paginator = require('mongoose-paginate');
-var moment = require('moment');
+var moment    = require('moment');
 
-var Schema  = mongoose.Schema;
+var Schema    = mongoose.Schema;
 
 // Define Token Attributes
 var tokenSchema = new Schema({

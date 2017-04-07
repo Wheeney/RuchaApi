@@ -1,21 +1,21 @@
 {
-  "name": "Rucha-api",
+  "name": "api",
   "version": "1.0.0",
-  "description": "Rucha api",
+  "description": "",
   "main": "app.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "start": "DEBUG=api* nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha",
     "build-docs": "./node_modules/.bin/apidoc -i ./routes -o ./docs"
   },
   "repository": {
     "type": "git",
-    "url": "git.gebeya.com/Rucha/BackEnd.git"
+    "url": ""
   },
-  "author": "winnie",
+  "author": "winnie <winniekerubo103@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.5",
@@ -28,6 +28,7 @@
     "express": "^4.14.1",
     "express-unless": "^0.3.0",
     "express-validator": "^3.1.2",
+    "firebase": "^3.7.4",
     "jade": "^1.11.0",
     "mailgun": "^0.5.0",
     "moment": "^2.17.1",
@@ -42,9 +43,11 @@
   },
   "devDependencies": {
     "apidoc": "^0.17.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
     "supertest": "^3.0.0"
   },
   "apidoc": {
-    "url": "146.148.110.255"
+    "url": ""
   }
 }

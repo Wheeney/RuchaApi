@@ -51,7 +51,7 @@ exports.updateProfile = function updateProfile(req, res, next) {
 /**
  * Get Profiles
  * 
- * @desc Get a collection of users
+ * @desc Get a collection of profiles
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher
@@ -100,49 +100,30 @@ exports.getRunsCreated = (req, res, next)=>{
 };
 
 /**
- * Get users coordinates(lat, long)
+ * Get a collection of profiles by pagination
  * 
- * @desc Get all the runs joined by a apecific user
+ * @desc Get a collection of profiles from the database by pagiation
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher
+ * @param {function} next middleware dispatcher 
  */
-exports.getCoordinates = (req, res, next)=>{
-    debug('Getting users coordinates');
-    
-    profileDal.get({_id:req.params._id}, function getcb(err, profile){
-        if(err){ return next(err);}
-        
-        var query = profile.city;
-        request('https://maps.googleapis.com/maps/api/geocode/json?address='+query+'&key=AIzaSyDlweacuTHT3rxacwQGYdvotc1yKd2Bs7g', function (err, response, body) {
-            if (!err && response.statusCode == 200) {
-                console.log(body);
-                res.send(body); 
-            }
-        });
-    });
-};
+exports.fetchAllByPagination = function fetchAllProfiles(req, res, next) {
+  debug('get a collection of profiles by pagination');
 
-/**
- * Accept invitation
- */
-exports.acceptInvite = function acceptInvite(req, res, next){
-    debug('accept invitation');
-    
-    if(run_invitation.length = 0){
-        return;
-    }else{
-        inviteDal.update({_id:invite._id}, {$pull:{pendingInvites:body.pendingInvites}, $addToSet:{acceptedInvites:body.acceptedInvites}}, function updatecb(err, invite){
-            if(err){ return next(err);}
-            
-            profileDal.update({_id:profile._id}, {$pull:{run_invitation:body.run_invitation}, $addToSet:{runs_joined:body.runs_joined}}, function updatecb2(err, profile){
-                if(err){ return next(err);}
+  // retrieve pagination query params
+  var page   = req.query.page || 1;
+  var limit  = req.query.per_page || 10;
 
-                res.json(profile);
-            })
-        })
+  var opts = {
+    page: page,
+    limit: limit
+  };
+  var query = {};
+
+  profileDal.getCollectionByPagination(query, opts, function cb(err, profiles) {
+    if(err) {
+      return next(err);
     }
-    
-}
-
-
+    res.json(profiles);
+  });
+};

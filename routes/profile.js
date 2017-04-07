@@ -1,6 +1,7 @@
 // Load Module Dependencies
 var express = require('express');
 var profile = require('../controllers/profile');
+var multer  = require('multer');
 
 // Create a Router
 var router = express.Router();
@@ -64,6 +65,7 @@ var router = express.Router();
  * ]
  */
 router.get('/all', profile.getProfiles);
+router.get('/', profile.fetchAllByPagination);
 
 
 /**
@@ -153,16 +155,8 @@ router.get('/:_id', profile.getProfile);
  *   "last_modified": "2017-03-08T10:15:48.761Z"
  * }
  */
-router.put('/:_id', profile.updateProfile);
+router.put('/:_id',profile.updateProfile);
 
-router.get('/:_id/coordinates', profile.getCoordinates);
-
-router.get('/:_id/created', profile.getRunsCreated);
-
-router.get('/:_id/created/:_id', profile.getRunsCreated);
-
-
-router.get('/:_id/joined', profile.getRunsJoined);
 
 // Export Router
 module.exports = router;
