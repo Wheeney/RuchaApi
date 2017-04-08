@@ -1,6 +1,7 @@
 // Load Module Dependencies
 var express = require('express');
 var profile = require('../controllers/profile');
+var multer  = require('multer');
 
 // Create a Router
 var router = express.Router();
@@ -153,7 +154,7 @@ router.get('/:_id', profile.getProfile);
  *   "last_modified": "2017-03-08T10:15:48.761Z"
  * }
  */
-router.put('/:_id', profile.updateProfile);
+router.put('/:_id', multer({ dest: './assets/'}).single('upl'),profile.updateProfile);
 
 router.get('/:_id/coordinates', profile.getCoordinates);
 

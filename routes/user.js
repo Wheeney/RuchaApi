@@ -3,7 +3,7 @@ var express   =   require('express');
 
 var user      = require('../controllers/user');
 var auth      = require('../controllers/auth');
-var authorize = require('../lib/authorize');
+// var authorize = require('../lib/authorize');
 
 // Create a Router
 var router = express.Router();
@@ -144,7 +144,9 @@ router.post('/:_id/logout', auth.logout);
  * }
  * ]
  */
-router.get('/all',authorize(['admin']), user.getUsers);
+router.get('/all', user.getUsers);
+router.get('/', user.fetchAllByPagination);
+
 
 /**
  * @api {get} /users/:_id Get one user
@@ -230,7 +232,7 @@ router.get('/:_id', user.fetchOne);
  *     "runs_joined": []
  * }
  */
-router.put('/:_id',authorize(['admin']), user.updateUser);
+router.put('/:_id', user.updateUser);
 
 // router.get('/:_id/coordinates', user.getCoordinates);
 router.post('/:_id/forgot', user.forgotPassword);
@@ -238,8 +240,6 @@ router.post('/:_id/forgot', user.forgotPassword);
 router.post('/:_id/reset', user.resetPassword);
 
 router.post('/:_id/updatePass', user.updatePassword);
-
-router.post('/forgot', auth.forgotPassword);
 
 // Export Router
 module.exports = router;

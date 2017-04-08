@@ -23,31 +23,19 @@ exports.createInvite = function createInvite(req, res, next){
     var workflow = new EventEmitter();
     var body = req.body;
 
-    workflow.on('validateInvite', function validateInvite(){
-        //validate invitation
-        req.checkBody('run', 'Please select a run').notEmpty();
-        req.checkBody('invitees', 'Please select people to invite').notEmpty();
-
-        var validationErrors = req.validationErrors();
-        if(validationErrors){
-            res.status(400);
-            res.json(validationErrors);
-        }else{
-            workflow.emit('createInvite');
-        };
-    });
-
     workflow.on('createInvite', function createInvite(){
         inviteDal.create({
-            run:req.body.run,
-            invitees:req.body.invitees
+            run     :body.run,
+            invitees:body.invitees
             }, function createcb(err, invite){
             if(err) { return next(err);}
-
-            profileDal.update({_id:req.body.invitees}, { $addToSet:{runs_invited:invite._id}}, function updatecb(err, profile){
+            
+            var query = req.body.invitees;
+            
+                profileDal.update({_id:query }, { $set:{runs_invited:invite._id}},{ multi:true }, function updatecb(err, profile){
                 if(err){ return next(err);}
 
-                runDal.update({_id:req.body.run}, { $addToSet:{pendingInvites:req.body.invitees}}, function updatecb2(err, run){
+                runDal.update({_id:req.body.run}, { $addToSet:{pendingInvites:query}}, function updatecb2(err, run){
                     if(err){ return next(err);}
 
                     workflow.emit('respond', invite);
@@ -59,7 +47,7 @@ exports.createInvite = function createInvite(req, res, next){
     workflow.on('respond', function respond(invite){
         res.status(201).json(invite);
     });
-    workflow.emit('validateInvite');
+    workflow.emit('createInvite');
 };
 
 /**
@@ -171,3 +159,12 @@ exports.acceptInvite = function acceptInvite(req, res, next){
     });
     workflow.emit('getInvite');
 };
+/**
+ * Join invited run
+ */
+exports.joinInvitedRun = function joinInvitedRun(req, res, next){
+    debug('join invite:', req.params._id);
+
+    var query = {_id:req.params._id};
+    
+}

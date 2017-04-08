@@ -128,4 +128,4 @@ exports.getCollection = function getCollection(query, cb) {
       return cb(null, tokens);
   });
 
-};
+}

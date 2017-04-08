@@ -18,9 +18,8 @@ var runSchema = new Schema({
     creator        : { type: String, ref:'Profile'},
     participants   : [{ type: Schema.Types.ObjectId, ref:'User'}],
     pendingInvites : [{ type: Schema.Types.ObjectId, ref:'Profile'}],
-    invitees       : [{ type: Schema.Types.ObjectId, ref:'User'}],
     limit          : { type: Number},
-    visibility     : { type: String, },
+    visibility     : { type: String, default:'public'},
     starting_point : {
       name:{ type:String},
       lat :{ type:Number},

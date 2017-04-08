@@ -7,8 +7,6 @@ var request      = require('request');
 var sendgrid = require('sendgrid')('kerubo111', 'winnie111');
 var sg = require('sendgrid')('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');
 
-
-
 var config       = require('../config');
 var userDal      = require('../dal/user');
 var profileDal   = require('../dal/profile');
@@ -174,9 +172,35 @@ exports.getUsers = (req, res, next) => {
     userDal.getCollection(query, function getUserCollections(err, users) {
         if (err) { return next(err); }
 
-        res.json(users.length);
+        res.json(users);
     });
 };
+
+/**
+ * Get a collection of users by pagination
+ */
+exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
+  debug('get a collection of users by pagination');
+
+  // retrieve pagination query params
+  var page   = req.query.page || 1;
+  var limit  = req.query.per_page || 10;
+
+  var opts = {
+    page: page,
+    limit: limit
+  };
+  var query = {};
+
+  userDal.getCollectionByPagination(query, opts, function cb(err, users) {
+    if(err) {
+      return next(err);
+    }
+
+    res.json(users);
+  });
+};
+
 
 
 /**
@@ -289,7 +313,6 @@ exports.forgotPassword = function forgotPassword(req, res, next){
 
         userDal.get({ _id:req.params._id}, function getcb(err, user){
             if(err){ return next(err);}
-
             if(body.email !== req._user.username){
                 res.status(404);
                 res.json({
@@ -317,6 +340,7 @@ exports.forgotPassword = function forgotPassword(req, res, next){
     });
     workflow.on('netSend', function netSend(user, tokenValue){
         var resetToken = tokenValue;
+        
 
         var helper = require('sendgrid').mail;
         var from_email = new helper.Email('rucha709@gmail.com');

@@ -5,7 +5,7 @@ var debug  = require('debug')('api:dal-user');
 var moment = require('moment');
 var User   = require('../models/user');
 var population = [{path:'profile'}];
-var returnFields = User.attributes;
+var returnFields = User.whitelist;
 
 /**
  * create a new user
@@ -21,7 +21,7 @@ exports.create = (userData, cb)=>{
 
     //verify that the user does not exist(using their email)
     User.findOne(query, function userExists(err, existingUser){
-        if(err) { return cb(err); };
+        if(err) { return next(err); };
         
         if(existingUser){
             return cb(new Error('User already exists!'));
@@ -120,12 +120,32 @@ exports.getCollection = (query, cb)=>{
 /**
  * Get a collection of users by pagination
  */
-exports.getUserCollection = function getUserCollection(query, queryOpts, cb){
-    debug('Getting users by pagination');
+exports.getCollectionByPagination = function getCollection(query, qs, cb) {
+  debug('fetching a collection of users');
 
-    var Promise = User.paginate(query, queryOpts)
-    .then (result=>{ return cb(result);
-    })
-    .catch(err=>{ return cb(err);
-        });
+  var opts = {
+    columns:  returnFields,
+    sortBy:   qs.sort || {},
+    populate: population,
+    page:     qs.page,
+    limit:    qs.limit
+  };
+
+
+  User.paginate(query, opts, function (err, docs, page, count) {
+    if(err) {
+      return cb(err);
+    }
+
+
+    var data = {
+      total_pages: page,
+      total_docs_count: count,
+      docs: docs
     };
+
+    cb(null, data);
+
+  });
+
+};

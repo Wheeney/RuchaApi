@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "DEBUG=api* nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/mocha",
     "build-docs": "./node_modules/.bin/apidoc -i ./routes -o ./docs"
   },
   "repository": {
@@ -28,6 +28,7 @@
     "express": "^4.14.1",
     "express-unless": "^0.3.0",
     "express-validator": "^3.1.2",
+    "firebase": "^3.7.4",
     "jade": "^1.11.0",
     "mailgun": "^0.5.0",
     "moment": "^2.17.1",
@@ -42,6 +43,8 @@
   },
   "devDependencies": {
     "apidoc": "^0.17.5",
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
     "supertest": "^3.0.0"
   },
   "apidoc": {

@@ -3,12 +3,12 @@
  */
 var env = process.env;
 
-var PORT = env.PORT || 8800;
+var PORT = env.PORT || 9900;
 var MONGODB_URL = env.MONGODB_URL || 'mongodb://127.0.0.1:27017/rucha';
 var HOST = 'localhost';
-var SGUSER = 'kerubo111';
-var SGPASSWORD = 'winnie111';
-var SGAPIKEY = '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'; 
+var SGUSER = env.SGUSER|| 'kerubo111';
+var SGPASSWORD = env.SGPASSWORD|| 'winnie111';
+var SGAPIKEY = env.SGAPIKEY || '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'; 
 
 module.exports = {
     PORT : PORT,

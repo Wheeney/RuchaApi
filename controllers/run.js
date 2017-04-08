@@ -15,11 +15,11 @@ var inviteDal    = require('../dal/invite');
 
 /**
  * Create a run
- * 
+ *
  * @desc create a run and save it in the db
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.createRun = (req, res, next)=>{
     debug('creating a run');
@@ -59,25 +59,27 @@ exports.createRun = (req, res, next)=>{
 
                 profileDal.update({_id:req._user.profile},{ $addToSet:{runs_created:run._id} }, function updatecb(err, profile){
                     if(err){ return next(err);}
-                    
+
                     workflow.emit('respond', run);
-                });                       
+                    return;
+                });
             });
         });
     });
     workflow.on('respond', function respond(run){
-        res.status(201).json(run);
+        res.status(201);
+        res.json(run);
     });
     workflow.emit('validateRun');
 };
 
 /**
  * Get one run
- * 
+ *
  * @desc Fetch a single run from the database by Id
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.getRun =(req, res, next)=>{
     debug('Fetching a run:', req.params._id);
@@ -92,11 +94,11 @@ exports.getRun =(req, res, next)=>{
 
 /**
  * delete a single run
- * 
+ *
  * @desc delete a single run from the database by Id
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.removeRun =(req, res,next)=>{
      debug('deleting run:', req.params._id);
@@ -111,11 +113,11 @@ exports.removeRun =(req, res,next)=>{
 
 /**
  * update a  run
- * 
+ *
  * @desc update a single run from the database by Id
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.updateRun =(req, res, next)=>{
     debug('updating run:', req.params._id);
@@ -131,36 +133,60 @@ exports.updateRun =(req, res, next)=>{
 
 /**
  * get all runs
- * 
+ *
  * @desc Fetch all runs from the database
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.getRuns = (req, res, next)=>{
     debug('Fetching all runs');
+    if(req.query.search){
+        var regex = new RegExp(escapeRegex(req.query.search), 'gi');
+        var query = {location: regex};
 
-    var query = {};
-    
-    runDal.getCollection(query, function getRunCollections(err, runs){
-        if(err){ return next(err);}
-        res.json(runs);
-    });
+        runDal.getCollection(query, function getRunCollections(err, runs){
+            if(err){ 
+                return next(err);
+            }else{
+                if(runs.length<1){
+                    res.status(404);
+                    res.json({ 
+                        message:'No match found with specified keyword'
+                    });
+                }
+            }
+            res.json(runs);
+        });
+    }else{
+        var query = {};
+
+        runDal.getCollection(query, function getRunCollections(err, runs){
+            if(err){ return next(err);}
+            res.json(runs);
+        });
+    };
 };
+
+function escapeRegex(text){
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");
+}
+
+
 
 /**
  * get all public runs
- * 
+ *
  * @desc Fetch all public runs from the database
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.getPublicRuns =(req, res, next)=>{
     debug('Fetching all open runs');
 
     var query = {visibility:'public'};
-    
+
     runDal.getCollection(query, function getRunCollections(err, runs){
         if(err){ return next(err);}
         res.json(runs);
@@ -169,11 +195,11 @@ exports.getPublicRuns =(req, res, next)=>{
 
 /**
  * Get One public run
- * 
+ *
  * @desc Get one public run from the database
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.getOnePublicRun =(req, res, next)=>{
     debug('Fetching one public run:', req.params._id);
@@ -188,17 +214,17 @@ exports.getOnePublicRun =(req, res, next)=>{
 
 /**
  * Fetch all participants of a specific run
- * 
+ *
  * @desc Get all participants of the same run from the database
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher 
+ * @param {function} next middleware dispatcher
  */
 exports.getParticipants = function getParticipants(req, res, next){
     debug('Fetching all participants of run:', req.params._id);
 
     var query = {_id:req.params._id};
-    
+
     runDal.getParticipants(query, function getRunParticipants(err, runs){
         if(err){ return next(err); }
         res.json(runs);
@@ -208,7 +234,7 @@ exports.getParticipants = function getParticipants(req, res, next){
 
 /**
  * Join a run
- * 
+ *
  * @desc Follow a particular run
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
@@ -234,10 +260,10 @@ exports.joinRun = function joinRun(req, res, next){
         });
     });
 };
- 
+
 /**
  * Unfollow a run
- * 
+ *
  * @desc unfollow a particular run
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
@@ -266,7 +292,7 @@ exports.unfollowRun = function unfollowRun(req, res, next){
 
 /**
  * Get all participants of a run
- * 
+ *
  * @desc Get participants of a specific run
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
@@ -278,14 +304,14 @@ exports.getParticipants = (req, res, next)=>{
     var query = { _id:req.params._id};
     runDal.get(query, function done(err, run){
         if(err){ return next(err);}
-        res.json(run.participants);   
+        res.json(run.participants);
     });
 }
 
 
 /**
  * Search by location
- * 
+ *
  * @desc Search for a run by location
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
@@ -295,7 +321,7 @@ exports.search =(req, res, next)=>{
     debug('Search for a run location');
 
     var query = {location: req.params.location};
-    
+
     runDal.search(query, function getRunCollections(err, runs){
         if(err){ return next(err); }
 
@@ -324,13 +350,13 @@ exports.sendInvite = function sendInvite(req, res, next){
         }else{
             workflow.emit('createInvitation');
 
-        }     
+        }
     });
     workflow.on('createInvitation', function createInvitation(){
 
         var body = req.body;
         var query = {_id: req.params._id};
-        
+
         inviteDal.create({invitee:req.body.invitee}, function done(err, invite){
             if(err){ return next(err);}
 
@@ -367,20 +393,25 @@ exports.geocode = function geocode(req, res, next){
 
 /**
  * Get calories lost
- * 
+ *
+ * @desc Get calories lost per run
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ *
  * Requirements to calculate calories lost
  * 1.distance (end_point-starting_point)
  * 2.time (start_time - end_time)
  * 3.age
  * 4.heart rate
  * 5.gender
- * 
+ *
  * if gender==='male'
  * var calories_burned = ([(age * 0.2017)+(weight * 0.09036) + (heart_rate * 0.6309)- 55.0969]* time /4.184);
- * 
+ *
  * if gender==='female'
  * var calories_burned = [(age * 0.074)-(weight * 0.05741) + (heart_rate * 0.4472)- 20.4022]* time /4.184;
- * 
+ *
  * var kcal_per_min = (calories_burned / time);
  */
 exports.calculator = function calculator(req, res, next){
@@ -388,7 +419,7 @@ exports.calculator = function calculator(req, res, next){
 
     runDal.get({_id:req.params._id}, function getcb2(err, run){
         if(err){ return next(err);}
-        
+
         profileDal.get({_id:req._user.profile}, function getcb(err, profile){
         if(err){ return next(err);}
 
@@ -403,7 +434,7 @@ exports.calculator = function calculator(req, res, next){
         var time_taken    = (end_time) - (start_time);
         var distance      = (ending_point) - (starting_point);
 
-        if(age === undefined || gender ===undefined || heart_rate ===undefined || weight ===undefined ||start_time ===undefined || end_time ===undefined || starting_point ===undefined || ending_point ===undefined){
+        if(age === undefined || gender ===undefined || heart_rate ===undefined || weight ===undefined){
             res.status(404);
             res.json({
                 message:'please update your profile to complete this action'
@@ -416,7 +447,7 @@ exports.calculator = function calculator(req, res, next){
 
                 runDal.update({_id:req.params._id}, {$set:{calories_burned:calories_burned, kcal_per_min:kcal_per_min }}, function done(err, run){
                     if(err){ return next(err);}
-                    
+
                     res.json(run);
                 });
                 return;
@@ -427,45 +458,47 @@ exports.calculator = function calculator(req, res, next){
 
                     runDal.update({_id:req.params._id}, {$set:{calories_burned:calories_burned, kcal_per_min:kcal_per_min}}, function done(err, run){
                         if(err){ return next(err);}
-                        
+
                         res.json(run);
                     });
                 };
             };
-        });  
-    });     
+        });
+    });
 };
 
 /**
  * Get distance covered
+ *
+ * @desc Get distance covered per run
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
  */
 exports.getDistanceCovered = function getDistanceCovered(req, res, next){
     debug('Get distance covered on run:', req.params._id);
 
     var query = {_id:req.params._id};
-    
+
     runDal.get(query, function getcb(err, run){
         if(err){ return next(err);}
 
-        
-        
         workflow.on('distance', function distance(lat1, long1, lat2,long2){
             var long1 = run.starting_point.long;
             var lat1  = run.starting_point.lat;
             var long2 = run.ending_point.long;
             var lat2  = run.ending_point.lat;
 
-            var radlat1 = Math.PI * lat1 / 180;
-            var radlat2 = Math.PI * lat2/180;
-            var theta = long1-long2;
+            var radlat1  = Math.PI * lat1 / 180;
+            var radlat2  = Math.PI * lat2/180;
+            var theta    = long1-long2;
             var radtheta = Math.PI * theta/180;
-            var dist = Math.sin(radlat1)*Math.sin(radlat2)+Math.cos(radlat1)*Math.cos(radlat2)*Math.cos(radtheta);
+            var dist     = Math.sin(radlat1)*Math.sin(radlat2)+Math.cos(radlat1)*Math.cos(radlat2)*Math.cos(radtheta);
             dist = Math.acos(dist);
             dist = dist * 180/Math.PI;
             dist = dist *60 * 1.1515;
             dist = dist * 1.609344;
 
-            console.log('distance is:',dist);
             runDal.update(query, { $set:{distance:dist }}, function updatecb(err, run){
                 if(err){ return next(err);}
 
