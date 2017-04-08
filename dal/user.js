@@ -119,12 +119,22 @@ exports.getCollection = (query, cb)=>{
 
 /**
  * Get a collection of users by pagination
+ * 
+ * @desc Get a collection of users from the database by pagination
+ * @param {object} query  Query object
+ * @param {object} opts  options object
+ * @param {Function} cb Callback for once fetch is complete
  */
+<<<<<<< HEAD
 exports.getCollectionByPagination = function getCollection(query, qs, cb) {
+=======
+exports.getCollectionByPagination = function getCollection(query, opts, cb) {
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
   debug('fetching a collection of users');
 
   var opts = {
     columns:  returnFields,
+<<<<<<< HEAD
     sortBy:   qs.sort || {},
     populate: population,
     page:     qs.page,
@@ -137,15 +147,30 @@ exports.getCollectionByPagination = function getCollection(query, qs, cb) {
       return cb(err);
     }
 
+=======
+    sortBy:   opts.sort || {},
+    populate: population,
+    page:     opts.page,
+    limit:    opts.limit
+  };
+
+  User.paginate(query, opts, function (err, docs, page, count) {
+    if(err) { return cb(err);}
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
 
     var data = {
       total_pages: page,
       total_docs_count: count,
       docs: docs
     };
+<<<<<<< HEAD
 
     cb(null, data);
 
   });
 
+=======
+    cb(null, data);
+  });
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
 };

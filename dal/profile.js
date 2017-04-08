@@ -5,6 +5,7 @@ var debug      = require('debug')('api:dal-profile');
 var moment     = require('moment');
 var Profile    = require('../models/profile');
 var population = [{ path:'user'},{path:'invite'},{path:'run'}];
+var returnFields = Profile.whitelist;
 
 /**
  * create a profile
@@ -115,4 +116,35 @@ exports.getCollection = (query, cb)=>{
     });
 };
 
+
+/**
+ * Get a collection of profiles by pagination
+ * 
+ * @desc Get a collection of profiles from the database by pagination
+ * @param {object} query  Query object
+ * @param {object} opts  options object
+ * @param {Function} cb Callback for once fetch is complete
+ */
+exports.getCollectionByPagination = function getCollection(query, opts, cb) {
+  debug('fetching a collection of profiles');
+
+  var opts = {
+    columns:  returnFields,
+    sortBy:   opts.sort || {},
+    populate: population,
+    page:     opts.page,
+    limit:    opts.limit
+  };
+
+  Profile.paginate(query, opts, function (err, docs, page, count) {
+    if(err) { return cb(err);}
+
+    var data = {
+      total_pages: page,
+      total_docs_count: count,
+      docs: docs
+    };
+    cb(null, data);
+  });
+};
 

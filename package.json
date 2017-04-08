@@ -1,7 +1,7 @@
 {
-  "name": "Rucha-api",
+  "name": "api",
   "version": "1.0.0",
-  "description": "Rucha api",
+  "description": "",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git.gebeya.com/Rucha/BackEnd.git"
+    "url": "http://git.gebeya.com/winnie/supermarket-api"
   },
-  "author": "winnie",
+  "author": "winnie <winniekerubo103@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.5",
@@ -48,6 +48,6 @@
     "supertest": "^3.0.0"
   },
   "apidoc": {
-    "url": "146.148.110.255"
+    "url": ""
   }
 }

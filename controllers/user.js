@@ -4,16 +4,21 @@ var crypto       = require('crypto');
 var debug        = require('debug')('api:controller-user');
 var moment       = require('moment');
 var request      = require('request');
+<<<<<<< HEAD
 var sendgrid = require('sendgrid')('kerubo111', 'winnie111');
 var sg = require('sendgrid')('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');
+=======
+var sendgrid     = require('sendgrid')('kerubo111', 'winnie111');
+var sg           = require('sendgrid')('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');
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
 
 var config       = require('../config');
 var userDal      = require('../dal/user');
 var profileDal   = require('../dal/profile');
-var runDal       = require('../dal/run');
 var TokenDal     = require('../dal/token');
+var CustomError  = require('../lib/custom-error');
 
-//Sendgrid Configuration Settings	
+
 
 /**
  * create a user
@@ -39,15 +44,17 @@ exports.createUser = (req, res, next) => {
         req.checkBody('password', 'Invalid password!').notEmpty().withMessage('Password is empty').isLength(5);
         req.checkBody('user_type', 'User Type is Invalid!')
         .notEmpty().withMessage('User Type is Empty')
-        .isIn(['consumer', 'admin']).withMessage('User Type should either be consumer or admin');
+        .isIn(['consumer', 'manager']).withMessage('User Type should either be consumer or manager');
 
-        var validationErrors = req.validationErrors();
-        if (validationErrors) {
-            res.status(400).json(validationErrors);
-        } else {
+        var errs = req.validationErrors();
+        if (errs) {
+            return next(CustomError({
+                name:'USER_CREATION_ERROR',
+                message:errs.messaage
+            }));
+        }
             workflow.emit('createUser');
-        };
-    });
+        });
 
     workflow.on('createUser', function createUser() {
         debug('create new user');
@@ -56,9 +63,14 @@ exports.createUser = (req, res, next) => {
         userDal.create({
             username: body.email,
             password: body.password,
-            role: body.user_type
+            role    : body.user_type
         }, function createcb(err, user) {
-            if (err) { return next(err); }
+            if(err) {
+                return next(CustomError({
+                    name   : 'SERVER_ERROR',
+                    message: err.message
+                }));
+            };
 
             workflow.emit('createProfile', user);
         });
@@ -67,18 +79,31 @@ exports.createUser = (req, res, next) => {
     workflow.on('createProfile', function createProfile(user) {
         debug('create profile');
 
+        var userId    = { _id: user._id };
+        var profileId = { profile: profile._id };
+
         //create user profile
         profileDal.create({
-            user: user._id,
+            user      : user._id,
             first_name: body.first_name,
-            last_name: body.last_name,
-            city:body.city,
-            email: body.email
+            last_name : body.last_name,
+            city      : body.city,
+            email     : body.email
         }, function cb(err, profile) {
-            if (err) { return next(err); }
+            if(err) {
+                return next(CustomError({
+                    name   : 'SERVER_ERROR',
+                    message: err.message
+                }));
+            };
 
-            userDal.update({ _id: user._id }, { profile: profile._id }, function updatecb(err, user) {
-                if (err) { return next(err); }
+            userDal.update(userId, profileId, function updatecb(err, user) {
+                if(err) {
+                    return next(CustomError({
+                        name   : 'SERVER_ERROR',
+                        message: err.message
+                    }));
+                };
 
                 workflow.emit('respond', user);
             });
@@ -86,7 +111,6 @@ exports.createUser = (req, res, next) => {
     });
 
     workflow.on('respond', function respond(user) {
-        debug('respond');
 
         user = user.toJSON();
         delete user.password;
@@ -104,14 +128,18 @@ exports.createUser = (req, res, next) => {
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher 
  */
-exports.fetchOne = (req, res, next) => {
+exports.fetchOne = function GetOneUser(req, res, next){
     debug('Fetching user:', req.params._id);
 
     var query = { _id: req.params._id };
 
     userDal.get(query, function getcb(err, user) {
-        if (err) { return next(err); }
-
+        if(err) {
+            return next(CustomError({
+                name: 'SERVER_ERROR',
+                message: err.message
+            }));
+        };
         res.json(user);
     });
 };
@@ -130,8 +158,12 @@ exports.updateUser = (req, res, next) => {
     var body = req.body;
 
     userDal.update(query, body, function updatecb(err, user) {
-        if (err) { return next(err); }
-
+        if(err) {
+            return next(CustomError({
+                name: 'SERVER_ERROR',
+                message: err.message
+            }));
+        };
         res.json(user);
     });
 };
@@ -150,8 +182,12 @@ exports.delete = (req, res, next) => {
     var query = { _id: req.params._id };
 
     userDal.delete(query, function deletecb(err, user) {
-        if (err) { return next(err); }
-
+        if(err) {
+            return next(CustomError({
+                name: 'SERVER_ERROR',
+                message: err.message
+            }));
+        };
         res.json(user);
     });
 };
@@ -170,14 +206,31 @@ exports.getUsers = (req, res, next) => {
     var query = {};
 
     userDal.getCollection(query, function getUserCollections(err, users) {
+<<<<<<< HEAD
         if (err) { return next(err); }
 
+=======
+        if(err) {
+            return next(CustomError({
+                name: 'SERVER_ERROR',
+                message: err.message
+            }));
+        };
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
         res.json(users);
     });
 };
 
 /**
  * Get a collection of users by pagination
+<<<<<<< HEAD
+=======
+ * 
+ * @desc Get a collection of users from the database by pagiation
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher 
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
  */
 exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
   debug('get a collection of users by pagination');
@@ -194,9 +247,17 @@ exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
 
   userDal.getCollectionByPagination(query, opts, function cb(err, users) {
     if(err) {
+<<<<<<< HEAD
       return next(err);
     }
 
+=======
+        return next(CustomError({
+            name: 'SERVER_ERROR',
+            message: err.message
+        }));
+    };
+>>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
     res.json(users);
   });
 };
@@ -216,11 +277,6 @@ exports.updatePassword = function updatePassword(req, res, next){
     var workflow = new EventEmitter();
 
     workflow.on('updatePass', function updatePass(){
-        //Enter the oldPassword and newPassword
-        req.checkBody('password', 'password is empty').notEmpty();
-        req.checkBody('newPassword', 'newPassword is empty').notEmpty();
-        req.checkBody('confirmPassword', 'password mismatch').equals(req.body.newPassword);
-
         var errs = req.validationErrors();
         if(errs){
             res.status(404);
@@ -272,19 +328,6 @@ exports.updatePassword = function updatePassword(req, res, next){
     workflow.emit('updatePass');
 };
 
-
-/**
- * Get users coordinates(lat, long)
- */
-// exports.getCoordinates = function getCoordinates(req, res, next){
-//     debug('Getting coordinates of location:',req.body.city);
-    
-//     profileDal.get({_id:req.params._id}, function getcb(err, profile){
-//         if(err){ return next(err);}
-
-//         res.json(profile.city);
-//      });
-// };
 
 /**
  * Forgot password

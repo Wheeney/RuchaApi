@@ -1,37 +1,49 @@
-// Load Module Dependencies
-var mongoose = require('mongoose');
+/**
+ * Load Module Dependencies
+ */
+var mongoose  = require('mongoose');
 var paginator = require('mongoose-paginate');
-var moment = require('moment');
+var moment    = require('moment');
 
-var Schema = mongoose.Schema;
+var Schema    = mongoose.Schema;
 
 // Define Profile Schema
 var ProfileSchema = new Schema({
   user          : { type: Schema.Types.ObjectId, ref: 'User' },
-  runs_joined   : [{ type: Schema.Types.ObjectId, ref: 'Run' }],
-  runs_created  : [{ type: Schema.Types.ObjectId, ref: 'Run' }],
-  runs_invited  : [{ type: Schema.Types.ObjectId, ref: 'Invite'}],
   first_name    : { type: String },
   last_name     : { type: String },
-  email         : { type: String, unique:true },
+  email         : { type: String, unique:true, lowercase:true },
   date_of_birth : { type: Date },
-  age           : { type: Number},
-  heart_rate    : { type: String},
   gender        : { type: String},
-  weight        : { type: Number},
   city          : { type: String },
   country       : { type: String },
   address       : { type: String },
-  gender        : { type: String },
-  weight        : { type: Number },
+  postalcode    : { type: String },
   date_created  : { type: Date },
   last_modified : { type: Date }
   
 }, { versionKey: false });
 
+/**
+ * Model Attributes to expose
+ */
+ProfileSchema.statics.whitelist = {
+  user:1,
+  first_name:1,
+  last_name:1,
+  email:1,
+  date_of_birth:1,
+  gender:1,
+  city:1,
+  country:1,
+  address:1,
+  postalcode:1,
+  date_created:1,
+  last_modified:1
+};
+
 //Middleware to support pagination
 ProfileSchema.plugin(paginator);
-
 
 /**
  * Pre save middleware.

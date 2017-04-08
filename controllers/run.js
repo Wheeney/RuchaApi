@@ -317,18 +317,22 @@ exports.getParticipants = (req, res, next)=>{
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher
  */
-exports.search =(req, res, next)=>{
-    debug('Search for a run location');
-
-    var query = {location: req.params.location};
-
-    runDal.search(query, function getRunCollections(err, runs){
-        if(err){ return next(err); }
-
-        runs = runs.toJSON();
-        res.json(runs);
-    });
-};
+exports.search = function search(req, res, next){
+    debug('search run by location');
+    if(req.query.search){
+        var regex = new RegExp(escapeRegExp(req.query.search), 'gi');
+        var query = {location:regex};
+            runDal.getCollection(query, function getRunsCollections(err, runs){
+                if(err){
+                    return next(err);
+                }
+                res.json(runs);
+            });
+        }
+    };
+function escapeRegExp(string){
+  return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
 
 /**
  * Send invites

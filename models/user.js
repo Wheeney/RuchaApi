@@ -1,11 +1,14 @@
-// Load Module Dependencies
+/**
+ * Load Module Dependencies
+ */
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt');
 var moment   = require('moment');
 var config   = require('../config');
 var debug    = require('debug')('api:model-user');
-var paginator = require('mongoose-paginate');
-var Schema  = mongoose.Schema;
+var paginator= require('mongoose-paginate');
+
+var Schema   = mongoose.Schema;
 
 // Define User Attributes
 var UserSchema = new Schema({
@@ -78,6 +81,7 @@ UserSchema.pre('save', function preSaveHook(next){
       model.password = hash;
       model.date_created = now;
       model.last_modified = now;
+      
       next();      
     });
   });
