@@ -32,7 +32,7 @@ exports.createInvite = function createInvite(req, res, next){
             
             var query = req.body.invitees;
             
-                profileDal.update({_id:query }, { $set:{runs_invited:invite._id}},{ multi:true }, function updatecb(err, profile){
+                profileDal.update({_id:query }, { $set:{pending_invitations:invite._id}}, function updatecb(err, profile){
                 if(err){ return next(err);}
 
                 runDal.update({_id:req.body.run}, { $addToSet:{pendingInvites:query}}, function updatecb2(err, run){

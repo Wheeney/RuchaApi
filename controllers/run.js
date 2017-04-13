@@ -43,6 +43,7 @@ exports.createRun = (req, res, next)=>{
              workflow.emit('createRun');
         };
     });
+    console.log(req._user);
     workflow.on('createRun', function createRun(){
         profileDal.get({_id:req._user.profile}, function getcb(err, profile){
             if(err){ return next(err);}
@@ -52,11 +53,13 @@ exports.createRun = (req, res, next)=>{
                 location      :body.location,
                 scheduled_date:body.scheduled_date,
                 visibility    :body.visibility,
-                creator       :profile.first_name,
-                limit         :body.limit
+                creator       :profile.first_name
             }, function cb(err, run){
                 if(err){ return next(err);};
-
+                
+                // if(body.visibility ==='public'){
+                //     res.send('Only'+body.limit+'members are allowed');
+                // }
                 profileDal.update({_id:req._user.profile},{ $addToSet:{runs_created:run._id} }, function updatecb(err, profile){
                     if(err){ return next(err);}
 

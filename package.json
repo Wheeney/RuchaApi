@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "",
+  "description": "Rucha API",
   "main": "app.js",
   "directories": {
     "test": "test"
@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://git.gebeya.com/winnie/supermarket-api"
+    "url": "http://git.gebeya.com/Rucha/BackEnd.git"
   },
-  "author": "winnie <winniekerubo103@gmail.com>",
+  "author": "winnie",
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.5",

@@ -72,6 +72,367 @@
   },
   {
     "type": "post",
+    "url": "/quickRun/create",
+    "title": "Create a quickRun",
+    "name": "createQuickRun",
+    "group": "Quick_Run",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request Example:",
+          "content": " {\n \"starting_point\":{\n\t\t\"name\":\"nairobi\",\n\t\t\"lat\":\"-1.291536\",\n\t\t\"long\":\"36.845736\"\n\t},\n\t\"ending_point\":{\n\t\t\"name\":\"nakuru\",\n\t\t\"lat\":\"0.3031\",\n\t\t\"long\":\"36.0800\"\n\t},\n\t\"start_time\":\"06:00:00\",\n\t\"end_time\":\"08:30:00\"\n }",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": " {\n\"_id\": \"58ef571982d57f346d8bb518\",\n\"last_modified\": \"2017-04-13T10:46:49.781Z\",\n\"date_created\": \"2017-04-13T10:46:49.781Z\",\n\"start_time\": \"06:00:00\",\n\"end_time\": \"08:30:00\",\n\"ending_point\": {\n  \"name\": \"nakuru\",\n  \"lat\": 0.3031,\n  \"long\": 36.08\n},\n\"starting_point\": {\n  \"name\": \"nairobi\",\n \"lat\": -1.291536,\n  \"long\": 36.845736\n}\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "delete",
+    "url": "/quickRun/:_id",
+    "title": "Delete a single quickRun",
+    "name": "deletequickRun",
+    "group": "Quick_Run",
+    "success": {
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "{}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "get",
+    "url": "/quickRun/:_id",
+    "title": "Get a single quickRun data",
+    "name": "getOneQuickRun",
+    "group": "Quick_Run",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>Distance covered</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "[\n {\n    \"_id\": \"58ef571982d57f346d8bb518\",\n    \"last_modified\": \"2017-04-13T10:46:49.823Z\",\n    \"date_created\": \"2017-04-13T10:46:49.781Z\",\n    \"start_time\": \"06:00:00\",\n    \"end_time\": \"08:30:00\",\n    \"distance\": 196.6872310775424,\n    \"ending_point\": {\n      \"name\": \"nakuru\",\n      \"lat\": 0.3031,\n      \"long\": 36.08\n    },\n    \"starting_point\": {\n      \"name\": \"nairobi\",\n      \"lat\": -1.291536,\n      \"long\": 36.845736\n    }\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "get",
+    "url": "/quickRun/all",
+    "title": "Get quickRun collection",
+    "name": "getQuickRunCollection",
+    "group": "Quick_Run",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>Distance covered</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "[\n {\n    \"_id\": \"58ef56c37abd7c311221e480\",\n    \"last_modified\": \"2017-04-13T10:45:24.033Z\",\n    \"date_created\": \"2017-04-13T10:45:23.928Z\",\n    \"start_time\": \"07:00:00\",\n    \"end_time\": \"08:00:00\",\n    \"distance\": 69.5497976748658,\n    \"ending_point\": {\n      \"name\": \"nakuru\",\n      \"lat\": 0.3031,\n      \"long\": 36.08\n    },\n    \"starting_point\": {\n      \"name\": \"naivasha\",\n      \"lat\": 0.7172,\n      \"long\": 36.4310\n    }\n  },\n  {\n    \"_id\": \"58ef571982d57f346d8bb518\",\n    \"last_modified\": \"2017-04-13T10:46:49.823Z\",\n    \"date_created\": \"2017-04-13T10:46:49.781Z\",\n    \"start_time\": \"06:00:00\",\n    \"end_time\": \"08:30:00\",\n    \"distance\": 196.6872310775424,\n    \"ending_point\": {\n      \"name\": \"nakuru\",\n      \"lat\": 0.3031,\n      \"long\": 36.08\n    },\n    \"starting_point\": {\n      \"name\": \"nairobi\",\n      \"lat\": -1.291536,\n      \"long\": 36.845736\n    }\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "put",
+    "url": "/quickRun/:_id",
+    "title": "Update a single quickRun data",
+    "name": "updateOneQuickRun",
+    "group": "Quick_Run",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Request Example:",
+          "content": "{\n  \"end_time\":\"09:30:00\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>Distance covered</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "[\n {\n    \"_id\": \"58ef571982d57f346d8bb518\",\n    \"last_modified\": \"2017-04-13T10:46:49.823Z\",\n    \"date_created\": \"2017-04-13T10:46:49.781Z\",\n    \"start_time\": \"06:00:00\",\n    \"end_time\": \"09:30:00\",\n    \"distance\": 196.6872310775424,\n    \"ending_point\": {\n      \"name\": \"nakuru\",\n      \"lat\": 0.3031,\n      \"long\": 36.08\n    },\n    \"starting_point\": {\n      \"name\": \"nairobi\",\n      \"lat\": -1.291536,\n      \"long\": 36.845736\n    }\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "post",
     "url": "/runs/new",
     "title": "Create a run event",
     "name": "CreateRun",
@@ -875,7 +1236,7 @@
     "title": "Get one user",
     "permission": [
       {
-        "name": "admin"
+        "name": "manager"
       }
     ],
     "name": "fetchOne",

@@ -9,18 +9,23 @@ var Schema    = mongoose.Schema;
 
 // Define Profile Schema
 var ProfileSchema = new Schema({
-  user          : { type: Schema.Types.ObjectId, ref: 'User' },
-  first_name    : { type: String },
-  last_name     : { type: String },
-  email         : { type: String, unique:true, lowercase:true },
-  date_of_birth : { type: Date },
-  gender        : { type: String},
-  city          : { type: String },
-  country       : { type: String },
-  address       : { type: String },
-  postalcode    : { type: String },
-  date_created  : { type: Date },
-  last_modified : { type: Date }
+  user           : { type: Schema.Types.ObjectId, ref: 'User' },
+  runs_created   : [{ type: Schema.Types.ObjectId, ref: 'Run'}],
+  runs_joined    : [{ type: Schema.Types.ObjectId, ref: 'Run'}],
+  pending_invitations: [{ type: Schema.Types.ObjectId, ref: 'Invite'}],
+  quick_runs         : [{ type: Schema.Types.ObjectId, ref: 'QuickRun'}],
+  first_name     : { type: String },
+  last_name      : { type: String },
+  email          : { type: String, unique:true, lowercase:true },
+  age            : { type: String },
+  gender         : { type: String},
+  weight         : { type: Number},
+  heart_rate     : { type: String},
+  city           : { type: String },
+  country        : { type: String },
+  address        : { type: String },
+  postalcode     : { type: String },
+  date_created   : { type: Date }
   
 }, { versionKey: false });
 

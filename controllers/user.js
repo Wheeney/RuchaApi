@@ -4,13 +4,8 @@ var crypto       = require('crypto');
 var debug        = require('debug')('api:controller-user');
 var moment       = require('moment');
 var request      = require('request');
-<<<<<<< HEAD
 var sendgrid = require('sendgrid')('kerubo111', 'winnie111');
 var sg = require('sendgrid')('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');
-=======
-var sendgrid     = require('sendgrid')('kerubo111', 'winnie111');
-var sg           = require('sendgrid')('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');
->>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
 
 var config       = require('../config');
 var userDal      = require('../dal/user');
@@ -79,15 +74,11 @@ exports.createUser = (req, res, next) => {
     workflow.on('createProfile', function createProfile(user) {
         debug('create profile');
 
-        var userId    = { _id: user._id };
-        var profileId = { profile: profile._id };
-
         //create user profile
         profileDal.create({
             user      : user._id,
             first_name: body.first_name,
             last_name : body.last_name,
-            city      : body.city,
             email     : body.email
         }, function cb(err, profile) {
             if(err) {
@@ -97,7 +88,7 @@ exports.createUser = (req, res, next) => {
                 }));
             };
 
-            userDal.update(userId, profileId, function updatecb(err, user) {
+            userDal.update({ _id: user._id }, { profile: profile._id }, function updatecb(err, user) {
                 if(err) {
                     return next(CustomError({
                         name   : 'SERVER_ERROR',
@@ -204,33 +195,24 @@ exports.getUsers = (req, res, next) => {
     debug('Fetching all users');
 
     var query = {};
-
     userDal.getCollection(query, function getUserCollections(err, users) {
-<<<<<<< HEAD
-        if (err) { return next(err); }
-
-=======
         if(err) {
             return next(CustomError({
                 name: 'SERVER_ERROR',
                 message: err.message
             }));
         };
->>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
         res.json(users);
     });
 };
 
 /**
  * Get a collection of users by pagination
-<<<<<<< HEAD
-=======
  * 
  * @desc Get a collection of users from the database by pagiation
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher 
->>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
  */
 exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
   debug('get a collection of users by pagination');
@@ -247,17 +229,11 @@ exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
 
   userDal.getCollectionByPagination(query, opts, function cb(err, users) {
     if(err) {
-<<<<<<< HEAD
-      return next(err);
-    }
-
-=======
         return next(CustomError({
             name: 'SERVER_ERROR',
             message: err.message
         }));
     };
->>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
     res.json(users);
   });
 };

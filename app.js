@@ -5,13 +5,13 @@ var debug       = require('debug')('api:app');
 var mongoose    = require('mongoose');
 var validator   = require('express-validator');
 var morgan      = require('morgan');
-// var firebase    = require('firebase');
-var multer = require('multer');
+// var firebase = require('firebase');
+var multer      = require('multer');
 
 var config      = require('./config');
 var router      = require('./routes');
 
-// var authenticate = require('./lib/authenticate');
+var authenticate = require('./lib/authenticate');
 
 // Connect to Mongodb
 mongoose.connect(config.MONGODB.URL, config.MONGODB.OPTS);
@@ -35,9 +35,9 @@ mongoose.connection.on('error', function mongodbErrorListener() {
 var app = express();
 
 // Authentication Middleware
-// app.use(authenticate().unless({
-//   path: ['/users/login', '/users/signup']
-// }));
+app.use(authenticate().unless({
+  path: ['/users/login', '/users/signup']
+}));
 
 // Set Middleware
 app.use(bodyParser.json());

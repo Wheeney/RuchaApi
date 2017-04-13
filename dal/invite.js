@@ -21,7 +21,7 @@ exports.create = (inviteData, cb)=>{
     var newInvite = new Invite(inviteData);
     newInvite.save((err, invite)=>{
         if(err){ return cb(err); };
-
+        debug('sending invite....');
         exports.get({_id: invite._id}, function(err, invite){
             if (err){ return cb(err) };
             cb(null, invite);

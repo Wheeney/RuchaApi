@@ -1,12 +1,12 @@
 // Load Module Dependencies
-var express           = require('express');
+var express       = require('express');
 
-var userRouter        = require('./user');
-var profileRouter     = require('./profile');
-var cashierRouter     = require('./cashier');
-var managerRouter     = require('./manager');
-var productRouter     = require('./product');
-var transactionRouter = require('./transaction');
+var userRouter    = require('./user');
+var profileRouter = require('./profile');
+var runRouter     = require('./run');
+var quickRunRouter= require('./quickRun');
+var managerRouter = require('./manager');
+var inviteRouter  = require('./invite');
 
 // Export Router Initializater
 module.exports = function initRouter(app) {
@@ -17,17 +17,18 @@ module.exports = function initRouter(app) {
   // Profile Endpoint
   app.use('/profiles', profileRouter);
 
-  // Cashier Endpoint
-  app.use('/cashiers', cashierRouter);
+  // run Endpoint
+  app.use('/runs', runRouter);
+
+  // quickRun Endpoint
+  app.use('/quickRuns', quickRunRouter);
 
   // Manager Endpoint
   app.use('/managers', managerRouter);
 
-  // Product Endpoint
-  app.use('/products', productRouter);
+  // Invite Endpoint
+  app.use('/invites', inviteRouter);
 
-  // Transaction Endpoint
-  app.use('/transactions', transactionRouter);
   
   
 };

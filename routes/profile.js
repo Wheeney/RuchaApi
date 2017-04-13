@@ -155,11 +155,7 @@ router.get('/:_id', profile.getProfile);
  *   "last_modified": "2017-03-08T10:15:48.761Z"
  * }
  */
-<<<<<<< HEAD
-router.put('/:_id', multer({ dest: './assets/'}).single('upl'),profile.updateProfile);
-=======
 router.put('/:_id',profile.updateProfile);
->>>>>>> 20a378b607fbab94789a5291108f7f0f3ddaf1a3
 
 
 // Export Router
