@@ -4,7 +4,7 @@
 var debug      = require('debug')('api:dal-profile');
 var moment     = require('moment');
 var Profile    = require('../models/profile');
-var population = [{ path:'user'},{path:'invite'},{path:'run'}];
+var population = [{ path:'user'},{path:'invite'},{path:'run'},{ path:'quick_runs'}];
 var returnFields = Profile.whitelist;
 
 /**

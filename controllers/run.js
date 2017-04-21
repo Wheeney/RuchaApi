@@ -45,6 +45,7 @@ exports.createRun = (req, res, next)=>{
     });
     console.log(req._user);
     workflow.on('createRun', function createRun(){
+        
         profileDal.get({_id:req._user.profile}, function getcb(err, profile){
             if(err){ return next(err);}
             
@@ -321,14 +322,13 @@ exports.getParticipants = (req, res, next)=>{
  * @param {function} next middleware dispatcher
  */
 exports.search = function search(req, res, next){
-    debug('search run by location');
     if(req.query.search){
+
         var regex = new RegExp(escapeRegExp(req.query.search), 'gi');
         var query = {location:regex};
             runDal.getCollection(query, function getRunsCollections(err, runs){
-                if(err){
-                    return next(err);
-                }
+                if(err){return next(err);}
+
                 res.json(runs);
             });
         }
@@ -337,53 +337,6 @@ function escapeRegExp(string){
   return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
-/**
- * Send invites
- */
-exports.sendInvite = function sendInvite(req, res, next){
-    debug('sending invite');
-
-    var body = req.body;
-    // var workflow = new EventEmitter();
-
-    workflow.on('validateInvitation', function validateInvitation(){
-        debug('still sending yall');
-        req.checkBody('invitee','invitee id is empty').notEmpty();
-
-        var errs = req.validationErrors();
-        if(errs){
-            res.status(404);
-            res.json(errs);
-        }else{
-            workflow.emit('createInvitation');
-
-        }
-    });
-    workflow.on('createInvitation', function createInvitation(){
-
-        var body = req.body;
-        var query = {_id: req.params._id};
-
-        inviteDal.create({invitee:req.body.invitee}, function done(err, invite){
-            if(err){ return next(err);}
-
-            inviteDal.get(query, function getcb(err, invite){
-                if (err) { return next(err);}
-
-            profileDal.update({_id:body.invitee}, {$addToSet:{runs_invited:run._id}}, function updatecb1(err, profile){
-                if(err){ next(err);}
-
-                inviteDal.update({_id:run._id},{$addToSet:{invitee:body.invitee}}, function updatecb2(err, invite){
-                    if(err){ return next(err);}
-
-                    res.json(profile);
-                });
-            });
-        });
-    })
-});
-workflow.emit('validateInvitation');
-};
 
 /**
  * geocoding for starting_point and ending_point
@@ -398,120 +351,3 @@ exports.geocode = function geocode(req, res, next){
     });
 };
 
-/**
- * Get calories lost
- *
- * @desc Get calories lost per run
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher
- *
- * Requirements to calculate calories lost
- * 1.distance (end_point-starting_point)
- * 2.time (start_time - end_time)
- * 3.age
- * 4.heart rate
- * 5.gender
- *
- * if gender==='male'
- * var calories_burned = ([(age * 0.2017)+(weight * 0.09036) + (heart_rate * 0.6309)- 55.0969]* time /4.184);
- *
- * if gender==='female'
- * var calories_burned = [(age * 0.074)-(weight * 0.05741) + (heart_rate * 0.4472)- 20.4022]* time /4.184;
- *
- * var kcal_per_min = (calories_burned / time);
- */
-exports.calculator = function calculator(req, res, next){
-    debug('calculating calories lost');
-
-    runDal.get({_id:req.params._id}, function getcb2(err, run){
-        if(err){ return next(err);}
-
-        profileDal.get({_id:req._user.profile}, function getcb(err, profile){
-        if(err){ return next(err);}
-
-        var age           = profile.age;
-        var gender        = profile.gender;
-        var weight        = profile.weight;
-        var heart_rate    = profile.heart_rate;
-        var start_time    = run.start_time;
-        var end_time      = run.end_time;
-        var starting_point= run.starting_point;
-        var ending_point  = run.ending_point;
-        var time_taken    = (end_time) - (start_time);
-        var distance      = (ending_point) - (starting_point);
-
-        if(age === undefined || gender ===undefined || heart_rate ===undefined || weight ===undefined){
-            res.status(404);
-            res.json({
-                message:'please update your profile to complete this action'
-            });
-            return;
-        }
-            if(profile.gender ==='male'){
-                var calories_burned = ([(age * 0.2017)+(weight * 0.09036) + (heart_rate * 0.6309)- 55.0969]* time_taken /4.184);
-                var kcal_per_min = (calories_burned / time_taken);
-
-                runDal.update({_id:req.params._id}, {$set:{calories_burned:calories_burned, kcal_per_min:kcal_per_min }}, function done(err, run){
-                    if(err){ return next(err);}
-
-                    res.json(run);
-                });
-                return;
-            }else{
-                if(profile.gender ==='female'){
-                    var calories_burned = ([(age * 0.074)-(weight * 0.05741) + (heart_rate * 0.4472)- 20.4022]* time_taken /4.184);
-                    var kcal_per_min = (calories_burned / time_taken);
-
-                    runDal.update({_id:req.params._id}, {$set:{calories_burned:calories_burned, kcal_per_min:kcal_per_min}}, function done(err, run){
-                        if(err){ return next(err);}
-
-                        res.json(run);
-                    });
-                };
-            };
-        });
-    });
-};
-
-/**
- * Get distance covered
- *
- * @desc Get distance covered per run
- * @param {object} req HTTP request object
- * @param {object} res HTTP response object
- * @param {function} next middleware dispatcher
- */
-exports.getDistanceCovered = function getDistanceCovered(req, res, next){
-    debug('Get distance covered on run:', req.params._id);
-
-    var query = {_id:req.params._id};
-
-    runDal.get(query, function getcb(err, run){
-        if(err){ return next(err);}
-
-        workflow.on('distance', function distance(lat1, long1, lat2,long2){
-            var long1 = run.starting_point.long;
-            var lat1  = run.starting_point.lat;
-            var long2 = run.ending_point.long;
-            var lat2  = run.ending_point.lat;
-
-            var radlat1  = Math.PI * lat1 / 180;
-            var radlat2  = Math.PI * lat2/180;
-            var theta    = long1-long2;
-            var radtheta = Math.PI * theta/180;
-            var dist     = Math.sin(radlat1)*Math.sin(radlat2)+Math.cos(radlat1)*Math.cos(radlat2)*Math.cos(radtheta);
-            dist = Math.acos(dist);
-            dist = dist * 180/Math.PI;
-            dist = dist *60 * 1.1515;
-            dist = dist * 1.609344;
-
-            runDal.update(query, { $set:{distance:dist }}, function updatecb(err, run){
-                if(err){ return next(err);}
-
-                res.json(run);
-            });
-        });
-        workflow.emit('distance');
-    });
-};

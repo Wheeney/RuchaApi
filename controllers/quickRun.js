@@ -7,16 +7,16 @@ var moment       = require('moment');
 var debug        = require('debug')('api:controller-quickRun');
 
 var userDal      = require('../dal/user');
-var quickRunDal       = require('../dal/quickRun');
+var quickRunDal  = require('../dal/quickRun');
 var profileDal   = require('../dal/profile');
 var inviteDal    = require('../dal/invite');
 
 var workflow     = new EventEmitter();
 
 /**
- * Create a quickRun
+ * start a quickRun
  *
- * @desc create a quickRun and save it in the db
+ * @desc start a quickRun and save data in the db
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher
@@ -34,9 +34,8 @@ exports.createQuickRun = (req, res, next)=>{
         if(validationErrors){
             res.status(400);
             res.json(validationErrors);
-        } else{
-             workflow.emit('createQuickRun');
-        };
+        }
+        workflow.emit('createQuickRun');
     });
     workflow.on('createQuickRun', function createQuickRun(){
         profileDal.get({_id:req._user.profile}, function getcb(err, profile){
@@ -172,7 +171,7 @@ exports.getQuickRuns = (req, res, next)=>{
                 if(quickRuns.length<1){
                     res.status(404);
                     res.json({ 
-                        message:'No match found with specified keyword'
+                        message:'No match found with specified distanceword'
                     });
                 }
             }
@@ -279,7 +278,7 @@ exports.calculator = function calculator(req, res, next){
                 if(profile.gender ==='female'){
                     var calories_burned = ([(age * 0.074)-(weight * 0.05741) + (heart_rate * 0.4472)- 20.4022]* time_taken /4.184);
                     var kcal_per_min = (calories_burned / time_taken);
-                    console.log(age, weight, heart_rate,time_taken);
+
                     quickRunDal.update({_id:req.params._id}, {$set:{calories_burned:calories_burned, kcal_per_min:kcal_per_min}}, function done(err, quickRun){
                         if(err){ return next(err);}
 
@@ -292,43 +291,67 @@ exports.calculator = function calculator(req, res, next){
 };
 
 /**
- * Get distance covered
- *
- * @desc Get distance covered per quickRun
+ * Simple prediction
+ * 
+ * @desc Predict the amount of calories to lose given the distance
  * @param {object} req HTTP request object
  * @param {object} res HTTP response object
  * @param {function} next middleware dispatcher
+ * 
+ * Prediction analysis data:
+ * 1.Known distance
+ * 2.Known calories_burned
  */
-exports.getDistanceCovered = function getDistanceCovered(req, res, next){
-    debug('Get distance covered on a quickRun:', req.params._id);
+exports.predict = function predict(req, res,next){
+    debug('Predicting run data');
 
-    var query = {_id:req.params._id};
+    var body = req.body;
+    var workflow = new EventEmitter();
 
-    quickRunDal.get(query, function getcb(err, quickRun){
-        if(err){ return next(err);}
+    workflow.on('getDistance', function getDistance(){
 
-        workflow.on('distance', function distance(lat1, long1, lat2,long2){
-            var long1 = quickRun.starting_point.long;
-            var lat1  = quickRun.starting_point.lat;
-            var long2 = quickRun.ending_point.long;
-            var lat2  = quickRun.ending_point.lat;
+        var validationErrors = req.validationErrors();
+        if(validationErrors){
+            res.status(400);
+            res.json(validationErrors);
+        }
+        workflow.emit('predictCalories');
+    });
+    workflow.on('predictCalories', function predictCalories(){
 
-            var radlat1  = Math.PI * lat1 / 180;
-            var radlat2  = Math.PI * lat2/180;
-            var theta    = long1-long2;
-            var radtheta = Math.PI * theta/180;
-            var dist     = Math.sin(radlat1)*Math.sin(radlat2)+Math.cos(radlat1)*Math.cos(radlat2)*Math.cos(radtheta);
-            dist = Math.acos(dist);
-            dist = dist * 180/Math.PI;
-            dist = dist *60 * 1.1515;
-            dist = dist * 1.609344;
+        profileDal.get({_id:req._user.profile}, function getcb(err, profile){
+            if(err){ return next(err);}
 
-            quickRunDal.update(query, { $set:{distance:dist }}, function updatecb(err, quickRun){
-                if(err){ return next(err);}
-
-                res.json(quickRun);
+                    for (var i = 0; i < profile.quick_runs.length; i++){
+                        var obj = profile.quick_runs[i];
+                        
+                        quickRunDal.get({_id:obj}, function getcb2(err, quickRun){
+                            if(err) { return next(err);}
+                            
+                            function forecast(x, ky, kx){
+                            var i=0, nr=0, dr=0,ax=0,ay=0,a=0,b=0;
+                            function average(ar) {
+                                var r=0;
+                                for (i=0;i<ar.length;i++){
+                                    r = r+ar[i];
+                                }
+                                return r/ar.length;
+                            };
+                            ax=average(kx);
+                            ay=average(ky);
+                            for (i=0;i<kx.length;i++){
+                                nr = nr + ((kx[i]-ax) * (ky[i]-ay));
+                                dr = dr + ((kx[i]-ax)*(kx[i]-ax))
+                            };
+                            b=nr/dr;
+                            a=ay-b*ax;
+                            return (a+b*x);
+                        };
+                        res.json(quickRun.distance);
+                        res.json(forecast(body.distance,[quickRun.distance],[quickRun.calories_burned]));
+                    });
+                };
             });
         });
-        workflow.emit('distance');
-    });
+    workflow.emit('getDistance');
 };

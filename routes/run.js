@@ -85,7 +85,7 @@ router.post('/create', run.createRun);
  */
 router.get('/all', run.getRuns);
 
-router.post('/search/:location', run.search);
+router.get('/search', run.search);
 
 /**
  * @api {get} /runs/public Get a collection of public run events
@@ -308,8 +308,6 @@ router.delete('/:_id', run.removeRun);
 router.put('/:_id', run.updateRun);
 router.get('/:_id/start', run.geocode);
 
-router.get('/:_id/distance', run.getDistanceCovered);
-router.post('/:_id/cal', run.calculator);
 
 
 // Export Router

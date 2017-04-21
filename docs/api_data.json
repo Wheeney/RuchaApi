@@ -197,6 +197,92 @@
   },
   {
     "type": "get",
+    "url": "/quickRun/:_id/calc",
+    "title": "Get calories lost in a single quickRun",
+    "name": "getCaloriesLost",
+    "group": "Quick_Run",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "starting_point",
+            "description": "<p>Run starting_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "ending_point",
+            "description": "<p>Run ending_point</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "start_time",
+            "description": "<p>Run start_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "end_time",
+            "description": "<p>Run end_time</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "distance",
+            "description": "<p>Distance covered</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "calories_burned",
+            "optional": false,
+            "field": "calories_burned",
+            "description": "<p>calories_burned per run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "kcal_per_min",
+            "optional": false,
+            "field": "kcal_per_min",
+            "description": "<p>calories_burned per min of each run</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "last_modified",
+            "description": "<p>Last Modified Date</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "date_created",
+            "description": "<p>Date Created</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Response Example:",
+          "content": "\n {\n  \"_id\": \"58ef56c37abd7c311221e480\",\n  \"last_modified\": \"2017-04-13T12:42:45.038Z\",\n  \"date_created\": \"2017-04-13T10:45:23.928Z\",\n  \"start_time\": \"06:00:00\",\n  \"end_time\": \"08:30:00\",\n  \"distance\": 196.6872310775424,\n  \"kcal_per_min\": \"10.526003824091777\",\n  \"calories_burned\": \"26.31500956022944\",\n  \"ending_point\": {\n    \"name\": \"nakuru\",\n    \"lat\": 0.3031,\n    \"long\": 36.08\n  },\n  \"starting_point\": {\n    \"name\": \"nairobi\",\n    \"lat\": -1.291536,\n    \"long\": 36.845736\n  }\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "routes/quickRun.js",
+    "groupTitle": "Quick_Run"
+  },
+  {
+    "type": "get",
     "url": "/quickRun/:_id",
     "title": "Get a single quickRun data",
     "name": "getOneQuickRun",

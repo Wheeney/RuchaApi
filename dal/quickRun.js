@@ -109,3 +109,14 @@ exports.getCollection = (query, cb) => {
     .catch(err => { return cb(err);
     });
 };
+
+/**
+ * Perform prediction calculations
+ */
+exports.predictCalories = (query, cb)=>{
+    var Promise = QuickRun.aggregate(query).exec()
+    .then(quickRuns => { return cb(null, quickRuns)
+        })
+        .catch(err => { return cb(err);
+            });
+};

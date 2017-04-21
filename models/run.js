@@ -1,6 +1,4 @@
 
-// Module definition
-
 //Load module dependencies
  
 var mongoose = require('mongoose');
@@ -20,25 +18,9 @@ var runSchema = new Schema({
     pendingInvites : [{ type: Schema.Types.ObjectId, ref:'Profile'}],
     limit          : { type: Number},
     visibility     : { type: String, default:'public'},
-    starting_point : {
-      name:{ type:String},
-      lat :{ type:Number},
-      long:{ type:Number}
-    },
-    ending_point   : { 
-      name:{ type:String},
-      lat :{ type:Number},
-      long:{ type:Number}},
-    distance       : { type: Number },
-    start_time     : { type: Number },
-    end_time       : { type: Number },
-    time_taken     : { type: String },
-    averagePace    : { type: String},
-    calories_burned: { type: Number},
-    kcal_per_min   : { type: String },
     date_created   : { type: Date},
     last_modified  : { type: Date}
-    
+
 }, { versionKey: false });
 
 
