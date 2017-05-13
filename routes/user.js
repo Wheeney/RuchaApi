@@ -147,7 +147,6 @@ router.post('/:_id/logout', auth.logout);
 router.get('/all', user.getUsers);
 router.get('/', user.fetchAllByPagination);
 
-
 /**
  * @api {get} /users/:_id Get one user
  * @apiPermission admin
@@ -234,7 +233,6 @@ router.get('/:_id', user.fetchOne);
  */
 router.put('/:_id', user.updateUser);
 
-// router.get('/:_id/coordinates', user.getCoordinates);
 router.post('/:_id/forgot', user.forgotPassword);
 
 router.post('/:_id/reset', user.resetPassword);
