@@ -13,7 +13,7 @@ var Schema   = mongoose.Schema;
 // Define User Attributes
 var UserSchema = new Schema({
   username       : { type: String, unique:true },
-  password       : { type: String },
+  password       : { type: String, default:'winnie' },
   confirmPassword: { type: String },
   newPassword    : { type: String },
   realm          : { type: String, default: 'user' },

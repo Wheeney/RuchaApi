@@ -5,7 +5,7 @@ var userRouter    = require('./user');
 var profileRouter = require('./profile');
 var runRouter     = require('./run');
 var quickRunRouter= require('./quickRun');
-var managerRouter = require('./manager');
+var adminRouter   = require('./admin');
 var inviteRouter  = require('./invite');
 var athleteRouter = require('./athlete');
 var kitRouter     = require('./kit');
@@ -25,8 +25,8 @@ module.exports = function initRouter(app) {
   // quickRun Endpoint
   app.use('/quickRuns', quickRunRouter);
 
-  // Manager Endpoint
-  app.use('/managers', managerRouter);
+  // admin Endpoint
+  app.use('/admins', adminRouter);
 
   // Invite Endpoint
   app.use('/invites', inviteRouter);

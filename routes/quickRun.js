@@ -32,6 +32,7 @@ var router = express.Router();
  *	"end_time":"08:30:00"
  *  }
  *
+ * @apiSuccess {ObjectId} _id Unique quickRun ID
  * @apiSuccess {String} starting_point Run starting_point
  * @apiSuccess {String} ending_point Run ending_point
  * @apiSuccess {String} start_time Run start_time
@@ -40,6 +41,7 @@ var router = express.Router();
  * @apiSuccess {Date} date_created Date Created
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 201 Created
  *  {
  * "_id": "58ef571982d57f346d8bb518",
  * "last_modified": "2017-04-13T10:46:49.781Z",
@@ -65,6 +67,7 @@ router.post('/create', quickRun.createQuickRun);
  * @apiName getQuickRunCollection
  * @apiGroup Quick_Run
  *
+ * @apiSuccess {ObjectId} _id Unique quickRun ID
  * @apiSuccess {String} starting_point Run starting_point
  * @apiSuccess {String} ending_point Run ending_point
  * @apiSuccess {String} start_time Run start_time
@@ -74,6 +77,7 @@ router.post('/create', quickRun.createQuickRun);
  * @apiSuccess {Date} date_created Date Created
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
     "_id": "58ef56c37abd7c311221e480",
@@ -120,6 +124,7 @@ router.get('/all', quickRun.getQuickRuns);
  * @apiName getOneQuickRun
  * @apiGroup Quick_Run
  *
+ * @apiSuccess {ObjectId} _id Unique quickRun ID
  * @apiSuccess {String} starting_point Run starting_point
  * @apiSuccess {String} ending_point Run ending_point
  * @apiSuccess {String} start_time Run start_time
@@ -129,6 +134,7 @@ router.get('/all', quickRun.getQuickRuns);
  * @apiSuccess {Date} date_created Date Created
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
     "_id": "58ef571982d57f346d8bb518",
@@ -157,6 +163,7 @@ router.get('/:_id', quickRun.getQuickRun);
  * @apiName getCaloriesLost
  * @apiGroup Quick_Run
  *
+ * @apiSuccess {ObjectId} _id Unique quickRun ID
  * @apiSuccess {String} starting_point Run starting_point
  * @apiSuccess {String} ending_point Run ending_point
  * @apiSuccess {String} start_time Run start_time
@@ -168,7 +175,7 @@ router.get('/:_id', quickRun.getQuickRun);
  * @apiSuccess {Date} date_created Date Created
  *
  * @apiSuccessExample {json} Response Example:
- * 
+ * HTTP/1.1 200 Ok
  *  {
   "_id": "58ef56c37abd7c311221e480",
   "last_modified": "2017-04-13T12:42:45.038Z",
@@ -199,6 +206,7 @@ router.get('/:_id/calc', quickRun.calculator);
  * @apiGroup Quick_Run
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  * {}
  * 
  */
@@ -217,6 +225,7 @@ router.delete('/:_id', quickRun.removeQuickRun);
  *    "end_time":"09:30:00"
  *  }
  * 
+ * @apiSuccess {ObjectId} _id Unique quickRun ID
  * @apiSuccess {String} starting_point Run starting_point
  * @apiSuccess {String} ending_point Run ending_point
  * @apiSuccess {String} start_time Run start_time
@@ -226,6 +235,7 @@ router.delete('/:_id', quickRun.removeQuickRun);
  * @apiSuccess {Date} date_created Date Created
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
     "_id": "58ef571982d57f346d8bb518",

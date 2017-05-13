@@ -7,7 +7,7 @@ var run     = require('../controllers/run');
 var router = express.Router();
 
 /**
- * @api {post} /runs/new Create a run event
+ * @api {post} /runs/create Create a run event
  * @apiName CreateRun
  * @apiGroup Runs
  *
@@ -24,7 +24,7 @@ var router = express.Router();
  *	"visibility":"public"
  *   } 
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -33,6 +33,7 @@ var router = express.Router();
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 201 Created
  *  {
  *  "_id": "58b7ed442e4b9419b674c3a2",
  *  "name": "power run",
@@ -51,7 +52,7 @@ router.post('/create', run.createRun);
  * @apiName getRunCollection
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -60,6 +61,7 @@ router.post('/create', run.createRun);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
  *   "_id": "58b7ed442e4b9419b674c3a2",
@@ -85,14 +87,12 @@ router.post('/create', run.createRun);
  */
 router.get('/all', run.getRuns);
 
-router.get('/search', run.search);
-
 /**
- * @api {get} /runs/public Get a collection of public run events
- * @apiName getPublicRunCollection
+ * @api {get} /runs/search?search=param search run by location
+ * @apiName search
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -101,6 +101,37 @@ router.get('/search', run.search);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
+ * [
+ *  {
+ *   "_id": "58b7ed442e4b9419b674c3a2",
+ *   "name": "power run",
+ *   "location": "nyayo stadium",
+ *   "scheduled_date": "2014-03-05T00:00:00.000Z",
+ *   "visibility": "public",
+ *   "creator": "olivia",
+ *   "last_modified": "2017-03-01T07:09:43.704Z",
+ *   "participants": []
+ *  }
+ * ]
+ */
+router.get('/search', run.search);
+
+/**
+ * @api {get} /runs/open Get a collection of public run events
+ * @apiName getPublicRunCollection
+ * @apiGroup Runs
+ *
+ * @apiSuccess {ObjectId} _id Unique Run ID
+ * @apiSuccess {String} location Location of run
+ * @apiSuccess {Date} scheduled_date  Date of run
+ * @apiSuccess {String} visibility public /private
+ * @apiSuccess {String} creator Creator of run
+ * @apiSuccess {String} last_modified Last Modified Date
+ * @apiSuccess {String} date_created Date Created
+ *
+ * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
  *   "_id": "58b7ed442e4b9419b674c3a2",
@@ -127,11 +158,11 @@ router.get('/search', run.search);
 router.get('/open', run.getPublicRuns);
 
 /**
- * @api {get} /runs/public/:_id Get one public run event
+ * @api {get} /runs/open/:_id Get one public run event
  * @apiName getOnePublicRun
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -140,6 +171,7 @@ router.get('/open', run.getPublicRuns);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  * [
  *  {
  *   "_id": "58b7ed442e4b9419b674c3a2",
@@ -160,7 +192,7 @@ router.get('/open/:_id', run.getOnePublicRun);
  * @apiName joinRun
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -169,6 +201,7 @@ router.get('/open/:_id', run.getOnePublicRun);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  *  {
  *  "_id": "58b7ed442e4b9419b674c3a2",
  *  "name": "power run",
@@ -190,7 +223,7 @@ router.get('/:_id/join', run.joinRun);
  * @apiName unfollowRun
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -199,6 +232,7 @@ router.get('/:_id/join', run.joinRun);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  *  {
  *  "_id": "58b7ed442e4b9419b674c3a2",
  *  "name": "power run",
@@ -218,7 +252,7 @@ router.get('/:_id/unfollow', run.unfollowRun);
  * @apiName getRun
  * @apiGroup Runs
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -227,7 +261,7 @@ router.get('/:_id/unfollow', run.unfollowRun);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
- * 
+ * HTTP/1.1 200 Ok
  *  {
  *   "_id": "58b7ed442e4b9419b674c3a2",
  *   "name": "power run",
@@ -251,7 +285,7 @@ router.get('/:_id', run.getRun);
  * @apiSuccess {ObjectId} _id Unique participants ID
  *
  * @apiSuccessExample Response Example:
- * 
+ * HTTP/1.1 200 Ok
  *  [
  *    "58d24895c2b5446a5ec60d8e",
  *    "58b7ed442e4b9419b674c3a2",
@@ -267,6 +301,7 @@ router.get('/:_id/participants', run.getParticipants);
  * @apiGroup Runs
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  * {}
  * 
  */
@@ -284,7 +319,7 @@ router.delete('/:_id', run.removeRun);
  *	"name":"karura runners"
  *   } 
  *
- * @apiSuccess {String} _id Unique Run ID
+ * @apiSuccess {ObjectId} _id Unique Run ID
  * @apiSuccess {String} location Location of run
  * @apiSuccess {Date} scheduled_date  Date of run
  * @apiSuccess {String} visibility public /private
@@ -293,6 +328,7 @@ router.delete('/:_id', run.removeRun);
  * @apiSuccess {String} date_created Date Created
  *
  * @apiSuccessExample Response Example:
+ * HTTP/1.1 200 Ok
  *  {
  *  "_id": "58b7ed442e4b9419b674c3a2",
  *  "name": "karura runners",

@@ -63,7 +63,14 @@ exports.getProfiles = function getProfiles(req, res, next) {
     profileDal.getCollection(query, function getprofileCollections(err, profiles){
         if(err){
             return next(err);
-        }
+        }else{
+                if(profiles.length<1){
+                    res.status(404);
+                    res.json({ 
+                        message:'No match found with specified keyword'
+                    });
+                }
+            }
         res.json(profiles);
     });
 };
@@ -112,7 +119,7 @@ exports.fetchAllByPagination = function fetchAllProfiles(req, res, next) {
 
   // retrieve pagination query params
   var page   = req.query.page || 1;
-  var limit  = req.query.per_page || 10;
+  var limit  = req.query.per_page || 3;
 
   var opts = {
     page: page,
@@ -126,4 +133,27 @@ exports.fetchAllByPagination = function fetchAllProfiles(req, res, next) {
     }
     res.json(profiles);
   });
+};
+
+/**
+ * Search user by name
+ *
+ * @desc Search for a user by name
+ * @param {object} req HTTP request object
+ * @param {object} res HTTP response object
+ * @param {function} next middleware dispatcher
+ */
+exports.search = function search(req, res, next){
+    if(req.query.search){
+        var regex = new RegExp(escapeRegExp(req.query.search), 'gi');
+        var query = {first_name:regex};
+            profileDal.getCollection(query, function getProfileCollections(err, profiles){
+                if(err){return next(err);}
+
+                res.json(profiles);
+            });
+        }
+    };
+function escapeRegExp(string){
+  return string.replace(/[-[\]{}()*+?.,\\^$|#\s]/g,"\\$&");;
 };

@@ -150,7 +150,7 @@ router.get('/', user.fetchAllByPagination);
 
 /**
  * @api {get} /users/:_id Get one user
- * @apiPermission manager
+ * @apiPermission admin
  * @apiName fetchOne
  * @apiGroup Users
  *

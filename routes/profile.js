@@ -21,6 +21,7 @@ var router = express.Router();
  * @apiSuccess {String} runs_joined Runs user has joined
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * [
  * {
  *   "_id": "58b9b8c0e19f4a24a69343bb",
@@ -65,7 +66,47 @@ var router = express.Router();
  * ]
  */
 router.get('/all', profile.getProfiles);
-router.get('/', profile.fetchAllByPagination);
+
+/**
+ * @api {get} /profiles/search?search=param Search user profile by name
+ * @apiName search
+ * @apiGroup profiles
+ *
+ * @apiSuccess {ObjectId} _id Unique Profile ID
+ * @apiSuccess {ObjectId} user user Id
+ * @apiSuccess {String} first_name users first_name
+ * @apiSuccess {String} last_name users last_name
+ * @apiSuccess {String} email Email Address
+ * @apiSuccess {String} run_invitation Run invites received
+ * @apiSuccess {String} runs_created Runs created by user
+ * @apiSuccess {String} runs_joined Runs user has joined
+ *
+ * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
+ * {
+ *   "_id": "58b9b8c0e19f4a24a69343bb",
+ *   "user": {
+ *     "_id": "58b9b8c0e19f4a24a69343ba",
+ *     "last_modified": "2017-03-03T18:41:04.299Z",
+ *     "date_created": "2017-03-03T18:41:04.271Z",
+ *     "username": "winnie883@yahoo.com",
+ *     "role": "consumer",
+ *     "profile": "58b9b8c0e19f4a24a69343bb",
+ *     "status": "active",
+ *     "realm": "user"
+ *   },
+ *   "first_name": "winnie",
+ *   "last_name": "nyabuti",
+ *   "email": "winnie883@yahoo.com",
+ *   "run_invitation": [
+ *   "58ca9edc006ad4051044efd7"
+ * ],
+ *   "runs_created": [],
+ *   "runs_joined": []
+ * }
+ */
+router.get('/search', profile.search);
+router.get('/page', profile.fetchAllByPagination);
 
 
 /**
@@ -83,6 +124,7 @@ router.get('/', profile.fetchAllByPagination);
  * @apiSuccess {String} runs_joined Runs user has joined
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * {
  *   "_id": "58b9b8c0e19f4a24a69343bb",
  *   "user": {
@@ -135,6 +177,7 @@ router.get('/:_id', profile.getProfile);
 
  *
  * @apiSuccessExample {json} Response Example:
+ * HTTP/1.1 200 Ok
  * {
  *   "_id": "58b9b8c0e19f4a24a69343bb",
  *   "user": {
@@ -156,7 +199,6 @@ router.get('/:_id', profile.getProfile);
  * }
  */
 router.put('/:_id',profile.updateProfile);
-
 
 // Export Router
 module.exports = router;

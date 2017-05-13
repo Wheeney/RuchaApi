@@ -39,7 +39,7 @@ exports.createUser = (req, res, next) => {
         req.checkBody('password', 'Invalid password!').notEmpty().withMessage('Password is empty').isLength(5);
         req.checkBody('user_type', 'User Type is Invalid!')
         .notEmpty().withMessage('User Type is Empty')
-        .isIn(['consumer', 'manager']).withMessage('User Type should either be consumer or manager');
+        .isIn(['consumer', 'admin']).withMessage('User Type should either be consumer or admin');
 
         var errs = req.validationErrors();
         if (errs) {
@@ -237,8 +237,6 @@ exports.fetchAllByPagination = function fetchAllUsers(req, res, next) {
     res.json(users);
   });
 };
-
-
 
 /**
  * Update Password
